@@ -1,0 +1,46 @@
+{
+    "inventor_id": 1,
+    "inventor_name": "thomas",
+    "inventor_patents_totalnum": 8,
+    "invenor_companys": {
+        "cumt": {
+            "company_id": 1112,
+            "patents_num": 3,
+            "times": ["2018-01-01", "2019-01-10", "2022-01-10"]
+        },
+        "bjtu": {
+            "company_id": 1114,
+            "patents_num": 5,
+            "times": ["2018-01-01", "2019-01-10", "2022-01-10"]
+        }
+    },
+    "research_areas": {
+        "锂电池": ["2018-01-01", "2019-01-10", "2022-01-10"],
+        "路由器": ["2019-01-10", "2022-01-10"]
+    },
+    "collaborators": {
+        "王小波": {
+            "id": 2,
+            "times": ["2018-01-01"]
+        },
+        "黄晓明": {
+            "id": 3,
+            "times": ["2018-01-01"]
+        },
+        "王王望": {
+            "id": 4,
+            "times": ["2018-01-01"]
+        }
+    },
+    // "partner_company": {
+    //     "alibaba": ["2018-01-01"],
+    //     "tecent": ["2018-01-01"]
+    // },
+    "citations_num": 2,
+    "h-index": 166,
+    "g-index": 19,
+    "diversity": 12
+
+
+
+}

@@ -1,6 +1,7 @@
 {
     "inventor_id": 1,
     "inventor_name": "thomas",
+    "patents_ids": [122, 333, 4432],
     "inventor_patents_totalnum": 8,
     "invenor_companys": {
         "cumt": {
@@ -19,16 +20,16 @@
         "路由器": ["2019-01-10", "2022-01-10"]
     },
     "collaborators": {
-        "王小波": {
-            "id": 2,
+        "id_num1": {
+            "name": "小红",
             "times": ["2018-01-01"]
         },
-        "黄晓明": {
-            "id": 3,
+        "5": {
+            "name": "小绿",
             "times": ["2018-01-01"]
         },
-        "王王望": {
-            "id": 4,
+        "9": {
+            "name": "小紫",
             "times": ["2018-01-01"]
         }
     },

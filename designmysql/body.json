@@ -4,16 +4,21 @@
     "patents_ids": [122, 333, 4432],
     "inventor_patents_totalnum": 8,
     "invenor_companys": {
-        "cumt": {
-            "company_id": 1112,
+        "company_id1": {
+            "company_name": "cumt",
             "patents_num": 3,
             "times": ["2018-01-01", "2019-01-10", "2022-01-10"]
         },
-        "bjtu": {
-            "company_id": 1114,
+        "company_id2": {
+            "company_name": "bjtu",
             "patents_num": 5,
             "times": ["2018-01-01", "2019-01-10", "2022-01-10"]
         }
+    },
+    "patents_ipcs": {
+        "ipc_number": "2020-10-30",
+        "ipc_number2": "2020-10-30",
+        "ipc_number3": "2020-10-30"
     },
     "research_areas": {
         "锂电池": ["2018-01-01", "2019-01-10", "2022-01-10"],

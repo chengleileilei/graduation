@@ -1,6 +1,10 @@
+from numpy import insert
 import pymysql
 import os
+import json
 import ast
+
+from soupsieve import select
 from disambugation import isDisambugation
 
 root_dir = os.path.abspath(os.path.dirname(__file__))
@@ -15,13 +19,13 @@ except:
 cursor = local_db.cursor()
 
 # 构造sql语句查询属性部分
-column_prop = ['id', 'company_id', 'patenter',
-               'inventor', 'ipc', 'application_date']
-column_prop_sql = ''
-for prop in column_prop:
-    column_prop_sql += prop
-    column_prop_sql += ','
-column_prop_sql = column_prop_sql[:-1]
+patent_column_prop = ['id', 'company_id', 'patenter',
+                      'inventor', 'ipc', 'application_date']
+patent_column_prop_sql = ''
+for prop in patent_column_prop:
+    patent_column_prop_sql += prop
+    patent_column_prop_sql += ','
+patent_column_prop_sql = patent_column_prop_sql[:-1]
 
 t = 1  # 设置处理数据的数量
 for i in range(t):
@@ -30,7 +34,7 @@ for i in range(t):
     with open(root_dir+'\\current_patent_id.txt', 'r', encoding="utf-8")as f:
         max_patent_id = int(f.read())
     print("table max_id is :", max_patent_id)
-    sql = 'select '+column_prop_sql+' from company_patent where id>' + \
+    sql = 'select '+patent_column_prop_sql+' from company_patent where id>' + \
         str(max_patent_id) + ' order by id limit 1;'
     cursor.execute(sql)
     data_result = cursor.fetchall()[0]
@@ -58,7 +62,7 @@ for i in range(t):
         max_inventor_id = res_inventor_id
     # print(max_inventor_id)
 
-    # 构建字典用于存储id和是否为新入库inventor
+    # 构建current_inventors字典存储id和是否为新入库inventor
     current_inventors = {}
     sub_id = 0
     for inventor_name in patent_data['inventors']:
@@ -97,6 +101,7 @@ for i in range(t):
     # print('*************************')
     # print([ current_inventors[k]['inventor_id'] for k,v in current_inventors.items()])
 
+    # 对current_inventor中的每一个inventor进行数据写入（新建或更新）
     for k, v in current_inventors.items():
         # print(k, v, sep=' : ', end='\n')
 
@@ -105,25 +110,98 @@ for i in range(t):
             inventor_data = {
                 'inventor_id': current_inventors[k]['inventor_id'],
                 'inventor_name': k,
-                'patents_ids': str([patent_data['patent_id']]),
+                'patents_ids': [patent_data['patent_id']],
                 'inventor_patents_totalnum': 1,
-                'inventor_companys': {
+                'inventor_companys': json.dumps({
                     patent_data['company_id']: {
                         'company_name': patent_data['company_name'],
                         'patents_num': 1,
-                        'times': str([patent_data['time']])
+                        'times': [patent_data['time']]
                     }
-                },
-                'patent_ipcs': dict(zip(patent_data['ipcs'], [patent_data['time']] * len(patent_data['ipcs']))),
-                'collaborators':dict(\
-                    zip( [ current_inventors[kv[0]]['inventor_id'] for kv in current_inventors.items()],\
-                        [ dict( zip( ['name','times'], [kv[0], [patent_data['time']] ] ) ) for kv in current_inventors.items()]
-                        ))
+                }, ensure_ascii=False),
+                'patents_ipcs': json.dumps(dict(zip(patent_data['ipcs'], [[patent_data['time']]] * len(patent_data['ipcs']))), ensure_ascii=False),
+                'collaborators': json.dumps(dict(
+                    zip([current_inventors[kv[0]]['inventor_id'] for kv in current_inventors.items()],
+                        [dict(zip(['name', 'times'], [kv[0], [patent_data['time']]]))
+                         for kv in current_inventors.items()]
+                        )), ensure_ascii=False)
             }
-            print('========')
+            # print('========')
+            # for k, v in inventor_data.items():
+            #     print(k, v, sep=' : ', end='\n')
+
+            # 根据inventor_data数据构造insert sql语句
+            cols_sql = ''
+            values_sql = ''
             for k, v in inventor_data.items():
+                cols_sql += str(k)
+                cols_sql += ', '
+                values_sql += ("\'"+str(v)+"\'")
+                values_sql += ', '
+            cols_sql = '( ' + cols_sql[:-2] + ' )\n'
+            values_sql = '( ' + values_sql[:-2] + ' )'
+
+            insert_sql = 'INSERT INTO inventors\n' + \
+                cols_sql + 'VALUES\n' + values_sql + ';'
+            print('-------------------增加数据-----------------------')
+            print(insert_sql)
+            # 数据插入并提交
+            cursor.execute(insert_sql)
+            local_db.commit()
+
+        # 对已存在inventor数据更新
+        else:
+            inventors_column_prop = ['inventor_name', 'patents_ids',
+                                     'inventor_patents_totalnum', 'inventor_companys', 'patents_ipcs', 'collaborators']
+
+            # 读取表中已存在数据
+            old_inventor_data={}
+            for col in inventors_column_prop:
+                find_sql = 'select ' + col + ' from inventors where inventor_id=' + str(current_inventors[k]['inventor_id']) + ';'
+                cursor.execute(find_sql)
+                # inventors_res = cursor.fetchall()[0][0]
+                old_inventor_data[col] = cursor.fetchall()[0][0]
+            print('---------------追加数据-------------------')
+            for k, v in old_inventor_data.items():
                 print(k, v, sep=' : ', end='\n')
 
-        else:
-            pass
-            # 对已有数据进行更新
+            new_inventor_data = {
+                'inventor_id': current_inventors[k]['inventor_id'],
+                'inventor_name': k,
+                'patents_ids': [patent_data['patent_id']],
+                'inventor_patents_totalnum': 1,
+                'inventor_companys': json.dumps({
+                    patent_data['company_id']: {
+                        'company_name': patent_data['company_name'],
+                        'patents_num': 1,
+                        'times': [patent_data['time']]
+                    }
+                }, ensure_ascii=False),
+                'patents_ipcs': json.dumps(dict(zip(patent_data['ipcs'], [[patent_data['time']]] * len(patent_data['ipcs']))), ensure_ascii=False),
+                'collaborators': json.dumps(dict(
+                    zip([current_inventors[kv[0]]['inventor_id'] for kv in current_inventors.items()],
+                        [dict(zip(['name', 'times'], [kv[0], [patent_data['time']]]))
+                         for kv in current_inventors.items()]
+                        )), ensure_ascii=False)
+            }
+
+
+            # inventor_data = {
+            #     'inventor_id': current_inventors[k]['inventor_id'],
+            #     'inventor_name': k,
+            #     'patents_ids': [patent_data['patent_id']],
+            #     'inventor_patents_totalnum': 1,
+            #     'inventor_companys': json.dumps({
+            #         patent_data['company_id']: {
+            #             'company_name': patent_data['company_name'],
+            #             'patents_num': 1,
+            #             'times': [patent_data['time']]
+            #         }
+            #     }, ensure_ascii=False),
+            #     'patents_ipcs': json.dumps(dict(zip(patent_data['ipcs'], [patent_data['time']] * len(patent_data['ipcs']))), ensure_ascii=False),
+            #     'collaborators': json.dumps(dict(
+            #         zip([current_inventors[kv[0]]['inventor_id'] for kv in current_inventors.items()],
+            #             [dict(zip(['name', 'times'], [kv[0], [patent_data['time']]]))
+            #              for kv in current_inventors.items()]
+            #             )), ensure_ascii=False)
+            # }

@@ -1,4 +1,3 @@
-from numpy import insert
 import pymysql
 import os
 import json
@@ -102,38 +101,39 @@ for i in range(t):
     # print([ current_inventors[k]['inventor_id'] for k,v in current_inventors.items()])
 
     # 对current_inventor中的每一个inventor进行数据写入（新建或更新）
-    for k, v in current_inventors.items():
+    for ck, cv in current_inventors.items():
         # print(k, v, sep=' : ', end='\n')
 
-        if current_inventors[k]['tag'] == 'new':
+        # 构造当前inventor数据
+        new_inventor_data = {
+            'inventor_id': current_inventors[ck]['inventor_id'],
+            'inventor_name': ck,
+            'patents_ids': [patent_data['patent_id']],
+            'inventor_patents_totalnum': 1,
+            'inventor_companys': json.dumps({
+                patent_data['company_id']: {
+                    'company_name': patent_data['company_name'],
+                    'patents_num': 1,
+                    'times': [patent_data['time']]
+                }
+            }, ensure_ascii=False),
+            'patents_ipcs': json.dumps(dict(zip(patent_data['ipcs'], [[patent_data['time']]] * len(patent_data['ipcs']))), ensure_ascii=False),
+            'collaborators': json.dumps(dict(
+                zip([current_inventors[kv[0]]['inventor_id'] for kv in current_inventors.items()],
+                    [dict(zip(['name', 'times'], [kv[0], [patent_data['time']]]))
+                        for kv in current_inventors.items()]
+                    )), ensure_ascii=False)
+        }
+
+        if current_inventors[ck]['tag'] == 'new':
             # 构造sql写入一条新的inventor数据
-            inventor_data = {
-                'inventor_id': current_inventors[k]['inventor_id'],
-                'inventor_name': k,
-                'patents_ids': [patent_data['patent_id']],
-                'inventor_patents_totalnum': 1,
-                'inventor_companys': json.dumps({
-                    patent_data['company_id']: {
-                        'company_name': patent_data['company_name'],
-                        'patents_num': 1,
-                        'times': [patent_data['time']]
-                    }
-                }, ensure_ascii=False),
-                'patents_ipcs': json.dumps(dict(zip(patent_data['ipcs'], [[patent_data['time']]] * len(patent_data['ipcs']))), ensure_ascii=False),
-                'collaborators': json.dumps(dict(
-                    zip([current_inventors[kv[0]]['inventor_id'] for kv in current_inventors.items()],
-                        [dict(zip(['name', 'times'], [kv[0], [patent_data['time']]]))
-                         for kv in current_inventors.items()]
-                        )), ensure_ascii=False)
-            }
-            # print('========')
-            # for k, v in inventor_data.items():
+            # for k, v in new_inventor_data.items():
             #     print(k, v, sep=' : ', end='\n')
 
             # 根据inventor_data数据构造insert sql语句
             cols_sql = ''
             values_sql = ''
-            for k, v in inventor_data.items():
+            for k, v in new_inventor_data.items():
                 cols_sql += str(k)
                 cols_sql += ', '
                 values_sql += ("\'"+str(v)+"\'")
@@ -151,57 +151,89 @@ for i in range(t):
 
         # 对已存在inventor数据更新
         else:
-            inventors_column_prop = ['inventor_name', 'patents_ids',
-                                     'inventor_patents_totalnum', 'inventor_companys', 'patents_ipcs', 'collaborators']
+            # inventors_column_prop = ['inventor_name', 'patents_ids',
+            #                          'inventor_patents_totalnum', 'inventor_companys', 'patents_ipcs', 'collaborators']
 
-            # 读取表中已存在数据
-            old_inventor_data={}
-            for col in inventors_column_prop:
-                find_sql = 'select ' + col + ' from inventors where inventor_id=' + str(current_inventors[k]['inventor_id']) + ';'
+            # 读取表中已存inventor数据
+            old_inventor_data = {}
+            for kv in new_inventor_data.items():
+                find_sql = 'select ' + kv[0] + ' from inventors where inventor_id=' + str(
+                    current_inventors[ck]['inventor_id']) + ';'
                 cursor.execute(find_sql)
-                # inventors_res = cursor.fetchall()[0][0]
-                old_inventor_data[col] = cursor.fetchall()[0][0]
+                inventors_res = cursor.fetchall()[0][0]
+                old_inventor_data[kv[0]] = inventors_res
+                # print(type(inventors_res))
+            # print('---------------追加数据-------------------')
+            # for k, v in old_inventor_data.items():
+            #     print(k, v, sep=' : ', end='\n')
+
+            # 创建update_inventor_data存储更新后的数据
+            update_inventor_data = {}
+
+            # 更新 patents_ids 和 inventor_patents_totalnum
+            old_patents_ids = ast.literal_eval(
+                old_inventor_data['patents_ids'])
+            new_patent_id = new_inventor_data['patents_ids']
+            if new_patent_id[0] not in old_patents_ids:
+                update_inventor_data['patents_ids'] = old_patents_ids + \
+                    new_patent_id
+                update_inventor_data['inventor_patents_totalnum'] = old_inventor_data['inventor_patents_totalnum'] + 1
+
+            # 更新 inventor_companys
+            old_inventor_company = json.loads(
+                old_inventor_data['inventor_companys'])
+            update_inventor_data['inventor_companys'] = old_inventor_company
+            new_inventor_company = json.loads(new_inventor_data['inventor_companys'])
+            # print(new_inventor_company)
+            for company_id in new_inventor_company:
+                if company_id not in old_inventor_company:
+                    # 增加一个新company
+                    update_inventor_data['inventor_companys'][company_id] = new_inventor_company[company_id]
+                else:
+                    # 同一company,更新times和patents_num
+                    update_inventor_data['inventor_companys'][company_id]['patents_num'] += 1
+                    # if new_inventor_company[company_id]['times'][0] not in old_inventor_company[company_id]['times']: # 时间不重复再进行更新
+                    update_inventor_data['inventor_companys'][company_id]['times'] += new_inventor_company[company_id]['times']
+            update_inventor_data['inventor_companys'] = json.dumps(update_inventor_data['inventor_companys'] , ensure_ascii=False)
+            
+            # 更新 patents_ipcs
+            old_patents_ipcs = json.loads(old_inventor_data['patents_ipcs'])
+            update_inventor_data['patents_ipcs'] = old_patents_ipcs
+
+            new_patents_ipcs = json.loads(new_inventor_data['patents_ipcs'])
+            for ipc in new_patents_ipcs:
+                if ipc not in old_patents_ipcs:
+                    update_inventor_data['patents_ipcs'][ipc] = new_patents_ipcs[ipc]
+                else:
+                    update_inventor_data['patents_ipcs'][ipc] += new_patents_ipcs[ipc]
+            update_inventor_data['patents_ipcs'] = json.dumps(update_inventor_data['patents_ipcs'] , ensure_ascii=False)
+            
+            # 更新 collaborators
+            old_collaborators = json.loads(
+                old_inventor_data['collaborators'])
+            update_inventor_data['collaborators'] = old_collaborators
+            new_collaborators = json.loads(new_inventor_data['collaborators'])
+            # print(new_collaborators)
+            for col_id in new_collaborators:
+                if col_id not in old_collaborators:
+                    # 增加一个新company
+                    update_inventor_data['collaborators'][col_id] = new_collaborators[col_id]
+                else:
+                    update_inventor_data['collaborators'][col_id]['times'] += new_collaborators[col_id]['times']
+            update_inventor_data['collaborators'] = json.dumps(update_inventor_data['collaborators'], ensure_ascii=False)
+
+
+            # print('更新数据如下：')
+            # for k, v in update_inventor_data.items():
+            #     print(k, v, sep=' : ', end='\n')
+            
+            update_kv = ''
+            for k, v in update_inventor_data.items():
+                update_kv += ( str(k) + '=\'' + str(v) + '\', ' )
+            update_kv = update_kv[:-2]
+            
+            update_sql = 'update inventors set ' + update_kv + ' where inventor_id=' + str(current_inventors[ck]['inventor_id']) + ';'
             print('---------------追加数据-------------------')
-            for k, v in old_inventor_data.items():
-                print(k, v, sep=' : ', end='\n')
-
-            new_inventor_data = {
-                'inventor_id': current_inventors[k]['inventor_id'],
-                'inventor_name': k,
-                'patents_ids': [patent_data['patent_id']],
-                'inventor_patents_totalnum': 1,
-                'inventor_companys': json.dumps({
-                    patent_data['company_id']: {
-                        'company_name': patent_data['company_name'],
-                        'patents_num': 1,
-                        'times': [patent_data['time']]
-                    }
-                }, ensure_ascii=False),
-                'patents_ipcs': json.dumps(dict(zip(patent_data['ipcs'], [[patent_data['time']]] * len(patent_data['ipcs']))), ensure_ascii=False),
-                'collaborators': json.dumps(dict(
-                    zip([current_inventors[kv[0]]['inventor_id'] for kv in current_inventors.items()],
-                        [dict(zip(['name', 'times'], [kv[0], [patent_data['time']]]))
-                         for kv in current_inventors.items()]
-                        )), ensure_ascii=False)
-            }
-
-
-            # inventor_data = {
-            #     'inventor_id': current_inventors[k]['inventor_id'],
-            #     'inventor_name': k,
-            #     'patents_ids': [patent_data['patent_id']],
-            #     'inventor_patents_totalnum': 1,
-            #     'inventor_companys': json.dumps({
-            #         patent_data['company_id']: {
-            #             'company_name': patent_data['company_name'],
-            #             'patents_num': 1,
-            #             'times': [patent_data['time']]
-            #         }
-            #     }, ensure_ascii=False),
-            #     'patents_ipcs': json.dumps(dict(zip(patent_data['ipcs'], [patent_data['time']] * len(patent_data['ipcs']))), ensure_ascii=False),
-            #     'collaborators': json.dumps(dict(
-            #         zip([current_inventors[kv[0]]['inventor_id'] for kv in current_inventors.items()],
-            #             [dict(zip(['name', 'times'], [kv[0], [patent_data['time']]]))
-            #              for kv in current_inventors.items()]
-            #             )), ensure_ascii=False)
-            # }
+            print(update_sql,sep='\n')
+            cursor.execute(update_sql)
+            local_db.commit()

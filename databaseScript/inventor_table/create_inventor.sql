@@ -1,7 +1,7 @@
 create table if not exists `inventors` (
     `inventor_id` int  not null auto_increment primary key,
     `inventor_name` varchar(50) not null,
-    `patents_ids` varchar(512) null,
+    `patents_ids` LONGTEXT null,
     `inventor_patents_totalnum` int null,
     `inventor_companys` json null,
     `patents_ipcs` json null,

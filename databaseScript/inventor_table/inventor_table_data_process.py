@@ -26,7 +26,7 @@ for prop in patent_column_prop:
     patent_column_prop_sql += ','
 patent_column_prop_sql = patent_column_prop_sql[:-1]
 
-t = 1  # 设置处理数据的数量
+t = 10000  # 设置处理数据的数量
 for i in range(t):
     i += 1
     # 获取本地持久化的数据库已处理的最大id值，
@@ -144,7 +144,7 @@ for i in range(t):
             insert_sql = 'INSERT INTO inventors\n' + \
                 cols_sql + 'VALUES\n' + values_sql + ';'
             print('-------------------增加数据-----------------------')
-            print(insert_sql)
+            # print(inssert_sql)
             # 数据插入并提交
             cursor.execute(insert_sql)
             local_db.commit()
@@ -234,6 +234,10 @@ for i in range(t):
             
             update_sql = 'update inventors set ' + update_kv + ' where inventor_id=' + str(current_inventors[ck]['inventor_id']) + ';'
             print('---------------追加数据-------------------')
-            print(update_sql,sep='\n')
+            # print(update_sql,sep='\n')
             cursor.execute(update_sql)
             local_db.commit()
+
+    current_patent_id = patent_data['patent_id']
+    with open(root_dir+'\\current_patent_id.txt', 'w', encoding="utf-8")as f:
+        f.write(str(current_patent_id))    

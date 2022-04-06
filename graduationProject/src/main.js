@@ -3,6 +3,11 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import axios from 'axios'
+
+Vue.prototype.$axios = axios; // 把对象挂载vue中
+
+
 
 Vue.config.productionTip = false
 
@@ -16,6 +21,12 @@ new Vue({
     components: { App },
     template: '<App/>'
 })
+
+// axios({
+//     url: 'http://127.0.0.1:5000/'
+// }).then(res => {
+//     console.log(res);
+// })
 
 
 // runtime-only(Vue2)  代码更少，性能更高，

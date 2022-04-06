@@ -3,7 +3,9 @@
     <router-link to="/">hello</router-link>
     <router-link to="/home">home</router-link>
     <router-link to="/about">about</router-link>
-    <img src="./assets/logo.png">
+        <router-link to="/example">example</router-link>
+
+    <!-- <img src="./assets/logo.png"> -->
     <router-view/>
   </div>
 </template>

@@ -48,7 +48,8 @@ local_cursor = local_db.cursor()
 
 
 # 两个数据库相同结构表的数据拷贝，根据id或其他主键增量式拷贝
-times = 1
+times = 1000
+# 每个times对应10条数据
 maxid = 0
 for i in range(times):
     i+=1

@@ -26,13 +26,13 @@ for prop in patent_column_prop:
     patent_column_prop_sql += ','
 patent_column_prop_sql = patent_column_prop_sql[:-1]
 
-t = 1000  # 设置处理数据的数量
+t = 10  # 设置处理数据的数量
 for i in range(t):
     i += 1
     # 获取本地持久化的数据库已处理的最大id值
     with open(root_dir+'\\current_patent_id.txt', 'r', encoding="utf-8")as f:
         max_patent_id = int(f.read())
-    print("table max_id is :", max_patent_id)
+    # print("table max_id is :", max_patent_id)
     sql = 'select '+patent_column_prop_sql+' from company_patent where id>' + \
         str(max_patent_id) + ' order by id limit 1;'
     cursor.execute(sql)
@@ -76,25 +76,20 @@ for i in range(t):
         cursor.execute(find_same_sql)
         res = cursor.fetchall()
         # print(find_same_sql, type(res), res, sep='\n')
-        if not res:
-            # 未找到同名inventor，直接生成新的id和数据
+        if (not res) or (isDisambugation(inventor_name=inventor_name, cursor=cursor, table_name='inventors')):
+            # 未找到同名inventor，或与同名inventor为不同人，生成新id和数据
             sub_id += 1
             # print("name is not exist in table!")
             current_inventors[inventor_name]['tag'] = 'new'
             current_inventors[inventor_name]['inventor_id'] = max_inventor_id + sub_id
         else:
-            # print("name has existed in table!")
-            if (isDisambugation(inventor_name=inventor_name, cursor=cursor, table_name='inventors')):
-                # 与同名inventor为不同人，生成新id
-                sub_id += 1
-                # print("name is not exist in table!")
-                current_inventors[inventor_name]['tag'] = 'new'
-                current_inventors[inventor_name]['inventor_id'] = max_inventor_id + sub_id
-            else:
-                # 与同名inventor为同一人，无需生成新id
-                old_id = res[0][0]
-                current_inventors[inventor_name]['tag'] = 'old'
-                current_inventors[inventor_name]['inventor_id'] = old_id
+            # 与同名inventor为同一人，无需生成新id
+            old_id = res[0][0]
+            current_inventors[inventor_name]['tag'] = 'old'
+            current_inventors[inventor_name]['inventor_id'] = old_id
+    
+
+    print("----------------------抽取专利",patent_data['patent_id'],"---------------------------")
     for k, v in current_inventors.items():
         print(k, v, sep=' : ', end='\n')
     # print('*************************')
@@ -118,12 +113,18 @@ for i in range(t):
                 }
             }, ensure_ascii=False),
             'patents_ipcs': json.dumps(dict(zip(patent_data['ipcs'], [[patent_data['time']]] * len(patent_data['ipcs']))), ensure_ascii=False),
-            'collaborators': json.dumps(dict(
+            'collaborators': dict(
                 zip([current_inventors[kv[0]]['inventor_id'] for kv in current_inventors.items()],
                     [dict(zip(['name', 'times'], [kv[0], [patent_data['time']]]))
                         for kv in current_inventors.items()]
-                    )), ensure_ascii=False)
+                    ))
         }
+
+        # 在合作者中删除本人，并将数据json化
+        del new_inventor_data["collaborators"][new_inventor_data['inventor_id']]
+        new_inventor_data["collaborators"] = json.dumps(new_inventor_data["collaborators"], ensure_ascii=False)
+
+
 
         if current_inventors[ck]['tag'] == 'new':
             # 构造sql写入一条新的inventor数据
@@ -143,7 +144,7 @@ for i in range(t):
 
             insert_sql = 'INSERT INTO inventors\n' + \
                 cols_sql + 'VALUES\n' + values_sql + ';'
-            print('-------------------增加数据-----------------------')
+            print('--写入新inventor：',ck)
             # print(inssert_sql)
             # 数据插入并提交
             cursor.execute(insert_sql)
@@ -162,10 +163,6 @@ for i in range(t):
                 cursor.execute(find_sql)
                 inventors_res = cursor.fetchall()[0][0]
                 old_inventor_data[kv[0]] = inventors_res
-                # print(type(inventors_res))
-            # print('---------------追加数据-------------------')
-            # for k, v in old_inventor_data.items():
-            #     print(k, v, sep=' : ', end='\n')
 
             # 创建update_inventor_data存储更新后的数据
             update_inventor_data = {}
@@ -233,10 +230,10 @@ for i in range(t):
             update_kv = update_kv[:-2]
             
             update_sql = 'update inventors set ' + update_kv + ' where inventor_id=' + str(current_inventors[ck]['inventor_id']) + ';'
-            print('---------------追加数据-------------------')
             # print(update_sql,sep='\n')
             cursor.execute(update_sql)
             local_db.commit()
+            print('**更新旧inventor：',ck)
 
     current_patent_id = patent_data['patent_id']
     with open(root_dir+'\\current_patent_id.txt', 'w', encoding="utf-8")as f:

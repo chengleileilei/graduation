@@ -55,6 +55,7 @@ for i in range(times):
     i+=1
     local_cursor.execute('select max(id) from company_patent;')
     res_id = local_cursor.fetchone()
+    print(res_id,type(res_id))
     if(res_id == None):
         maxid = 0
     else:

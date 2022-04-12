@@ -19,17 +19,17 @@ cursor = local_db.cursor()
 
 # 构造sql语句查询属性部分
 patent_column_prop = ['id', 'company_id', 'patenter',
-                      'inventor', 'ipc', 'application_date']
+                      'inventor', 'designer', 'ipc', 'application_date']
 patent_column_prop_sql = ''
 for prop in patent_column_prop:
     patent_column_prop_sql += prop
     patent_column_prop_sql += ','
 patent_column_prop_sql = patent_column_prop_sql[:-1]
 
-t = 10000  # 设置处理数据的数量
+t = 1000  # 设置处理数据的数量
 for i in range(t):
     i += 1
-    # 获取本地持久化的数据库已处理的最大id值，
+    # 获取本地持久化的数据库已处理的最大id值
     with open(root_dir+'\\current_patent_id.txt', 'r', encoding="utf-8")as f:
         max_patent_id = int(f.read())
     print("table max_id is :", max_patent_id)
@@ -43,9 +43,9 @@ for i in range(t):
         'patent_id': data_result[0],
         'company_id': data_result[1],
         'company_name': ast.literal_eval(data_result[2]),
-        'inventors': ast.literal_eval(data_result[3]),  # 将字符串数组转化为真正数组
-        'ipcs': ast.literal_eval(data_result[4]),
-        'time': data_result[5]
+        'inventors': ast.literal_eval(data_result[3]) + ast.literal_eval(data_result[4]),  # 将字符串数组转化为真正数组
+        'ipcs': ast.literal_eval(data_result[5]),
+        'time': data_result[6]
     }
     # for k, v in patent_data.items():
     #     print(k, v, sep=' : ', end='\n')

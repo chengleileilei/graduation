@@ -19,7 +19,7 @@ cursor = local_db.cursor()
 
 # 构造sql语句查询属性部分
 patent_column_prop = ['id', 'company_id', 'patenter',
-                      'inventor', 'designer', 'ipc', 'application_date']
+                      'inventor', 'designer', 'ipc', 'application_date','patent_score']
 patent_column_prop_sql = ''
 for prop in patent_column_prop:
     patent_column_prop_sql += prop
@@ -45,7 +45,8 @@ for i in range(t):
         'company_name': ast.literal_eval(data_result[2]),
         'inventors': ast.literal_eval(data_result[3]) + ast.literal_eval(data_result[4]),  # 将字符串数组转化为真正数组
         'ipcs': ast.literal_eval(data_result[5]),
-        'time': data_result[6]
+        'time': data_result[6],
+        'patent_score':data_result[7]
     }
     # for k, v in patent_data.items():
     #     print(k, v, sep=' : ', end='\n')
@@ -60,6 +61,7 @@ for i in range(t):
     else:
         max_inventor_id = res_inventor_id
     # print(max_inventor_id)
+
 
     # 构建current_inventors字典存储id和是否为新入库inventor
     current_inventors = {}
@@ -117,7 +119,8 @@ for i in range(t):
                 zip([current_inventors[kv[0]]['inventor_id'] for kv in current_inventors.items()],
                     [dict(zip(['name','patent_ids', 'times'], [kv[0], [patent_data['patent_id']] ,[patent_data['time']]]))
                         for kv in current_inventors.items()]
-                    ))
+                    )),
+            'average_score':patent_data['patent_score']
         }
 
         # 在合作者中删除本人，并将数据json化
@@ -167,14 +170,14 @@ for i in range(t):
             # 创建update_inventor_data存储更新后的数据
             update_inventor_data = {}
 
-            # 更新 patents_ids 和 inventor_patents_totalnum
+            # 更新 patents_ids 和 inventor_patents_totalnum 和average_score
             old_patents_ids = ast.literal_eval(
                 old_inventor_data['patents_ids'])
             new_patent_id = new_inventor_data['patents_ids']
             if new_patent_id[0] not in old_patents_ids:
-                update_inventor_data['patents_ids'] = old_patents_ids + \
-                    new_patent_id
+                update_inventor_data['patents_ids'] = old_patents_ids + new_patent_id
                 update_inventor_data['inventor_patents_totalnum'] = old_inventor_data['inventor_patents_totalnum'] + 1
+                update_inventor_data['average_score'] = ( old_inventor_data['average_score'] * old_inventor_data['inventor_patents_totalnum'] +new_inventor_data['average_score'] ) / (old_inventor_data['inventor_patents_totalnum'] + 1)
 
             # 更新 inventor_companys
             old_inventor_company = json.loads(

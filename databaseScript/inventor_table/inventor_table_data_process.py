@@ -26,7 +26,7 @@ for prop in patent_column_prop:
     patent_column_prop_sql += ','
 patent_column_prop_sql = patent_column_prop_sql[:-1]
 
-t = 50000  # 设置处理数据的数量
+t = 100  # 设置处理数据的数量
 for i in range(t):
     i += 1
     # 获取本地持久化的数据库已处理的最大id值
@@ -115,7 +115,7 @@ for i in range(t):
             'patents_ipcs': json.dumps(dict(zip(patent_data['ipcs'], [[patent_data['time']]] * len(patent_data['ipcs']))), ensure_ascii=False),
             'collaborators': dict(
                 zip([current_inventors[kv[0]]['inventor_id'] for kv in current_inventors.items()],
-                    [dict(zip(['name', 'times'], [kv[0], [patent_data['time']]]))
+                    [dict(zip(['name','patent_ids', 'times'], [kv[0], [patent_data['patent_id']] ,[patent_data['time']]]))
                         for kv in current_inventors.items()]
                     ))
         }
@@ -217,6 +217,7 @@ for i in range(t):
                     update_inventor_data['collaborators'][col_id] = new_collaborators[col_id]
                 else:
                     update_inventor_data['collaborators'][col_id]['times'] += new_collaborators[col_id]['times']
+                    update_inventor_data['collaborators'][col_id]['patent_ids'] += new_collaborators[col_id]['patent_ids']
             update_inventor_data['collaborators'] = json.dumps(update_inventor_data['collaborators'], ensure_ascii=False)
 
 

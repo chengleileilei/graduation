@@ -4,6 +4,7 @@ import json
 import ast
 
 from soupsieve import select
+from sqlalchemy import null
 from disambugation import isDisambugation
 
 root_dir = os.path.abspath(os.path.dirname(__file__))
@@ -26,7 +27,7 @@ for prop in patent_column_prop:
     patent_column_prop_sql += ','
 patent_column_prop_sql = patent_column_prop_sql[:-1]
 
-t = 100  # 设置处理数据的数量
+t = 10000  # 设置处理数据的数量
 for i in range(t):
     i += 1
     # 获取本地持久化的数据库已处理的最大id值
@@ -46,7 +47,7 @@ for i in range(t):
         'inventors': ast.literal_eval(data_result[3]) + ast.literal_eval(data_result[4]),  # 将字符串数组转化为真正数组
         'ipcs': ast.literal_eval(data_result[5]),
         'time': data_result[6],
-        'patent_score':data_result[7]
+        'patent_score':data_result[7],
     }
     # for k, v in patent_data.items():
     #     print(k, v, sep=' : ', end='\n')
@@ -69,7 +70,7 @@ for i in range(t):
     for inventor_name in patent_data['inventors']:
         current_inventors[inventor_name] = {}
         current_inventors[inventor_name]['inventor_id'] = -1
-        current_inventors[inventor_name]['tag'] = 'no update'
+        current_inventors[inventor_name]['tag'] = ''
 
         # 查询表中是否存在同名inventor
         find_same_sql = "select inventor_id from inventors where inventor_name='" \
@@ -120,12 +121,21 @@ for i in range(t):
                     [dict(zip(['name','patent_ids', 'times'], [kv[0], [patent_data['patent_id']] ,[patent_data['time']]]))
                         for kv in current_inventors.items()]
                     )),
-            'average_score':patent_data['patent_score']
+            'average_score':patent_data['patent_score'],
+            'num_with_score':0
         }
 
         # 在合作者中删除本人，并将数据json化
         del new_inventor_data["collaborators"][new_inventor_data['inventor_id']]
         new_inventor_data["collaborators"] = json.dumps(new_inventor_data["collaborators"], ensure_ascii=False)
+        #判断是否为有评分专利
+        if new_inventor_data['average_score'] != None:
+            new_inventor_data['num_with_score'] = 1
+        # else:
+        #     new_inventor_data['average_score'] =0
+            
+        
+        
 
 
 
@@ -133,6 +143,7 @@ for i in range(t):
             # 构造sql写入一条新的inventor数据
             # for k, v in new_inventor_data.items():
             #     print(k, v, sep=' : ', end='\n')
+            # new_inventor_data['num_with_score'] +=1
 
             # 根据inventor_data数据构造insert sql语句
             cols_sql = ''
@@ -148,7 +159,8 @@ for i in range(t):
             insert_sql = 'INSERT INTO inventors\n' + \
                 cols_sql + 'VALUES\n' + values_sql + ';'
             print('--写入新inventor：',ck)
-            # print(inssert_sql)
+            insert_sql = insert_sql.replace("'None'","null")
+            print(insert_sql.replace("'None'","null"))
             # 数据插入并提交
             cursor.execute(insert_sql)
             local_db.commit()
@@ -170,14 +182,22 @@ for i in range(t):
             # 创建update_inventor_data存储更新后的数据
             update_inventor_data = {}
 
-            # 更新 patents_ids 和 inventor_patents_totalnum 和average_score
+            # 更新 patents_ids 和 inventor_patents_totalnum 和 average_score 以及 num_with_score
             old_patents_ids = ast.literal_eval(
                 old_inventor_data['patents_ids'])
             new_patent_id = new_inventor_data['patents_ids']
             if new_patent_id[0] not in old_patents_ids:
                 update_inventor_data['patents_ids'] = old_patents_ids + new_patent_id
                 update_inventor_data['inventor_patents_totalnum'] = old_inventor_data['inventor_patents_totalnum'] + 1
-                update_inventor_data['average_score'] = ( old_inventor_data['average_score'] * old_inventor_data['inventor_patents_totalnum'] +new_inventor_data['average_score'] ) / (old_inventor_data['inventor_patents_totalnum'] + 1)
+                print(new_inventor_data['num_with_score'],'**************')
+                if new_inventor_data['num_with_score']  != 0:
+                    if old_inventor_data['num_with_score'] != None:
+                        update_inventor_data['num_with_score'] = old_inventor_data['num_with_score'] + 1
+                        update_inventor_data['average_score'] = ( old_inventor_data['average_score'] * old_inventor_data['num_with_score'] +new_inventor_data['average_score'] ) / update_inventor_data['num_with_score']
+                    else:
+                        update_inventor_data['num_with_score'] = old_inventor_data['num_with_score'] + 1
+                        update_inventor_data['average_score'] = new_inventor_data['average_score']
+
 
             # 更新 inventor_companys
             old_inventor_company = json.loads(

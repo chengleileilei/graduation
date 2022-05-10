@@ -3,8 +3,7 @@ import os
 import json
 import ast
 
-from soupsieve import select
-from sqlalchemy import null
+
 from disambugation import isDisambugation
 
 root_dir = os.path.abspath(os.path.dirname(__file__))
@@ -27,7 +26,7 @@ for prop in patent_column_prop:
     patent_column_prop_sql += ','
 patent_column_prop_sql = patent_column_prop_sql[:-1]
 
-t = 10000  # 设置处理数据的数量
+t = 1000  # 设置处理数据的数量
 for i in range(t):
     i += 1
     # 获取本地持久化的数据库已处理的最大id值

@@ -1,5 +1,4 @@
 import configparser,os
-from numpy import insert
 import pymysql
 import copytable
 

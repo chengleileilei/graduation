@@ -10,7 +10,7 @@ CREATE TABLE  if not exists  `inventors`
     `collaborators`             json  DEFAULT NULL,
     `num_with_score`            int   DEFAULT NULL,
     `average_score`             float DEFAULT NULL,
-    `inventor_category`         json  DEFAULT NULL,
+    `inventor_categories`       json  DEFAULT NULL,
     PRIMARY KEY (`inventor_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb3;

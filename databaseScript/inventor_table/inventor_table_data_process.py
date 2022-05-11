@@ -1,3 +1,4 @@
+from unicodedata import category
 import pymysql
 import os
 import json
@@ -16,7 +17,17 @@ try:
                                database='report')
 except:
     print("connect database fail!")
-cursor = local_db.cursor()
+local_cursor = local_db.cursor()
+
+try:
+    remote_db = pymysql.connect(host='120.27.209.14',
+                                port=22936,
+                                user='junshi',
+                                password='junshi_suwen',
+                                database='Report')
+except:
+    print("connect database fail!")
+remote_cursor = remote_db.cursor()
 
 # 构造sql语句查询属性部分
 patent_column_prop = ['id', 'company_id', 'patenter',
@@ -27,7 +38,7 @@ for prop in patent_column_prop:
     patent_column_prop_sql += ','
 patent_column_prop_sql = patent_column_prop_sql[:-1]
 
-t = 1  # 设置处理数据的数量
+t = 100  # 设置处理数据的数量
 for i in range(t):
     i += 1
     # 获取本地持久化的数据库已处理的最大id值
@@ -36,8 +47,8 @@ for i in range(t):
     # print("table max_id is :", max_patent_id)
     sql = 'select '+patent_column_prop_sql+' from company_patent where id>' + \
         str(max_patent_id) + ' order by id limit 1;'
-    cursor.execute(sql)
-    data_result = cursor.fetchall()[0]
+    remote_cursor.execute(sql)
+    data_result = remote_cursor.fetchall()[0]
 
     # 构造字典，存储从company_patent一条数据中抽取的内容
     patent_data = {
@@ -56,8 +67,8 @@ for i in range(t):
     # 获取inventors表中的最大id，用以生成新的id
     max_inventor_id = 0
     find_max_inventor_id_sql = 'select max(inventor_id) from inventors;'
-    cursor.execute(find_max_inventor_id_sql)
-    res_inventor_id = cursor.fetchall()[0][0]
+    local_cursor.execute(find_max_inventor_id_sql)
+    res_inventor_id = local_cursor.fetchall()[0][0]
     if(res_inventor_id == None):
         max_inventor_id = 0
     else:
@@ -76,10 +87,10 @@ for i in range(t):
         find_same_sql = "select inventor_id from inventors where inventor_name='" \
             + inventor_name \
             + "';"
-        cursor.execute(find_same_sql)
-        res = cursor.fetchall()
+        local_cursor.execute(find_same_sql)
+        res = local_cursor.fetchall()
         # print(find_same_sql, type(res), res, sep='\n')
-        if (not res) or (isDisambugation(inventor_name=inventor_name, cursor=cursor, table_name='inventors')):
+        if (not res) or (isDisambugation(inventor_name=inventor_name, cursor=local_cursor, table_name='inventors')):
             # 未找到同名inventor，或与同名inventor为不同人，生成新id和数据
             sub_id += 1
             # print("name is not exist in table!")
@@ -91,8 +102,8 @@ for i in range(t):
             current_inventors[inventor_name]['tag'] = 'old'
             current_inventors[inventor_name]['inventor_id'] = old_id
 
-    print("----------------------抽取专利",
-          patent_data['patent_id'], "---------------------------")
+    print("----------------------抽取专利id：",
+          patent_data['patent_id'], "得到发明人基础信息如下---------------------------")
     for k, v in current_inventors.items():
         print(k, v, sep=' : ', end='\n')
     # print('*************************')
@@ -123,7 +134,7 @@ for i in range(t):
                     )),
             'average_score': patent_data['patent_score'],
             'num_with_score': 0,
-            'inventor_categories': getCategory(patent_data['patent_id'])
+            'inventor_categories': getCategory(patent_data['patent_id'],remote_cursor)
         }
 
         # 在合作者中删除本人，并将数据json化
@@ -137,8 +148,8 @@ for i in range(t):
         #     new_inventor_data['average_score'] =0
 
         # 为inventor_categories添加time信息
-        for inventor_category in new_inventor_data['inventor_categories']:
-            inventor_category['time'] = [patent_data['time']]
+        for category_id,category_data in new_inventor_data['inventor_categories'].items():
+            new_inventor_data['inventor_categories'][category_id]['time'] = [patent_data['time']]
         new_inventor_data["inventor_categories"] = json.dumps(
             new_inventor_data["inventor_categories"], ensure_ascii=False)
 
@@ -163,9 +174,9 @@ for i in range(t):
                 cols_sql + 'VALUES\n' + values_sql + ';'
             print('--写入新inventor：', ck)
             insert_sql = insert_sql.replace("'None'", "null")
-            print(insert_sql.replace("'None'", "null"))
+            # print(insert_sql.replace("'None'", "null"))
             # 数据插入并提交
-            cursor.execute(insert_sql)
+            local_cursor.execute(insert_sql)
             local_db.commit()
 
         # 对已存在inventor数据更新
@@ -178,8 +189,8 @@ for i in range(t):
             for kv in new_inventor_data.items():
                 find_sql = 'select ' + kv[0] + ' from inventors where inventor_id=' + str(
                     current_inventors[ck]['inventor_id']) + ';'
-                cursor.execute(find_sql)
-                inventors_res = cursor.fetchall()[0][0]
+                local_cursor.execute(find_sql)
+                inventors_res = local_cursor.fetchall()[0][0]
                 old_inventor_data[kv[0]] = inventors_res
 
             # 创建update_inventor_data存储更新后的数据
@@ -193,7 +204,7 @@ for i in range(t):
                 update_inventor_data['patents_ids'] = old_patents_ids + \
                     new_patent_id
                 update_inventor_data['inventor_patents_totalnum'] = old_inventor_data['inventor_patents_totalnum'] + 1
-                print(new_inventor_data['num_with_score'], '**************')
+                # print(new_inventor_data['num_with_score'], '**************')
                 if new_inventor_data['num_with_score'] != 0:
                     if old_inventor_data['num_with_score'] != None:
                         update_inventor_data['num_with_score'] = old_inventor_data['num_with_score'] + 1
@@ -257,15 +268,12 @@ for i in range(t):
             update_inventor_data['inventor_categories'] = old_inventor_categories
             new_inventor_categories = json.loads(new_inventor_data['inventor_categories'])
             # print(new_inventor_categories)
-
-            for category in new_inventor_categories:
-                old_categories_ids = [ old_category["category_id"] for old_category in old_inventor_categories]
-                if category["category_id"] not in old_categories_ids:
+            for category_id in new_inventor_categories:
+                if category_id not in old_inventor_categories:
                     # 增加一个新company
-                    update_inventor_data['inventor_categories'] += new_inventor_categories
+                    update_inventor_data['inventor_categories'][category_id] = new_inventor_categories[category_id]
                 else:
-                    update_inventor_data['inventor_categories'][category]['times'] += new_inventor_categories[category]['times']
-                    update_inventor_data['inventor_categories'][category]['patent_ids'] += new_inventor_categories[category]['patent_ids']
+                    update_inventor_data['inventor_categories'][category_id]['time'] += new_inventor_categories[category_id]['time']
             update_inventor_data['inventor_categories'] = json.dumps(
                 update_inventor_data['inventor_categories'], ensure_ascii=False)
 
@@ -283,7 +291,7 @@ for i in range(t):
                 ' where inventor_id=' + \
                 str(current_inventors[ck]['inventor_id']) + ';'
             # print(update_sql,sep='\n')
-            cursor.execute(update_sql)
+            local_cursor.execute(update_sql)
             local_db.commit()
             print('**更新旧inventor：', ck)
 

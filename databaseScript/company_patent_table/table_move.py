@@ -47,7 +47,7 @@ local_cursor = local_db.cursor()
 
 
 # 两个数据库相同结构表的数据拷贝，根据id或其他主键增量式拷贝
-times = 3000
+times = 100
 # 每个times对应10条数据
 maxid = 0
 for i in range(times):
@@ -86,9 +86,9 @@ for i in range(times):
         value_sql = '( ' + value_sql[:-2] + ' ),\n'
         values_sql += value_sql
     values_sql = values_sql[:-2]
-    # print( values_sql)
 
     insert_sql = 'insert into company_patent\n' + cols_sql + 'VALUES\n' + values_sql + ';' 
+    print( insert_sql)
 
     local_cursor.execute(insert_sql)
     local_db.commit()

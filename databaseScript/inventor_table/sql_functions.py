@@ -10,7 +10,7 @@ def getCategory(patent_id,cursor):
     sql_get_industry_category_id = 'SELECT industry_category from company WHERE id in ( SELECT company_id from company_patent WHERE id = "'+str(patent_id)+'" );'
     cursor.execute(sql_get_industry_category_id)
     r = cursor.fetchone()
-    print("sql_function print :",r,"patent_id:",patent_id)
+    # print("sql_function print :",r,"patent_id:",patent_id)
 
     try:
         category_ids = eval(r[0])

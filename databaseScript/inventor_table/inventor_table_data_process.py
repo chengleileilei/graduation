@@ -37,7 +37,7 @@ for prop in patent_column_prop:
     patent_column_prop_sql += ','
 patent_column_prop_sql = patent_column_prop_sql[:-1]
 
-t = 100  # 设置处理数据的数量
+t = 1  # 设置处理数据的数量
 for i in range(t):
     i += 1
     # 获取本地持久化的数据库已处理的最大id值
@@ -77,19 +77,23 @@ for i in range(t):
     # 构建current_inventors字典存储id和是否为新入库inventor
     current_inventors = {}
     sub_id = 0
+    # print("inventor names in one patent:" ,patent_data['inventors'])
     for inventor_name in patent_data['inventors']:
         current_inventors[inventor_name] = {}
         current_inventors[inventor_name]['inventor_id'] = -1
         current_inventors[inventor_name]['tag'] = ''
 
         # 查询表中是否存在同名inventor
-        find_same_sql = "select inventor_id from inventors where inventor_name='" \
-            + inventor_name \
-            + "';"
-        local_cursor.execute(find_same_sql)
-        res = local_cursor.fetchall()
+        # find_same_sql = "select inventor_id from inventors where inventor_name='" \
+        #     + inventor_name \
+        #     + "';"
+        # local_cursor.execute(find_same_sql)
+        # res = local_cursor.fetchall()
         # print(find_same_sql, type(res), res, sep='\n')
-        if (not res) or (isDisambugation(inventor_name=inventor_name, cursor=local_cursor, table_name='inventors')):
+
+        disambugation_res_id = isDisambugation(
+            name=inventor_name, cursor=local_cursor, patent_data=patent_data)
+        if (disambugation_res_id == -1):
             # 未找到同名inventor，或与同名inventor为不同人，生成新id和数据
             sub_id += 1
             # print("name is not exist in table!")
@@ -97,9 +101,10 @@ for i in range(t):
             current_inventors[inventor_name]['inventor_id'] = max_inventor_id + sub_id
         else:
             # 与同名inventor为同一人，无需生成新id
-            old_id = res[0][0]
+            # old_id = res[0][0]
             current_inventors[inventor_name]['tag'] = 'old'
-            current_inventors[inventor_name]['inventor_id'] = old_id
+            current_inventors[inventor_name]['inventor_id'] = disambugation_res_id
+    # print("inventor names in one patent:" ,patent_data['inventors'])
 
     print("----------------------抽取专利id：",
           patent_data['patent_id'], "得到发明人基础信息如下---------------------------")
@@ -133,7 +138,7 @@ for i in range(t):
                     )),
             'average_score': patent_data['patent_score'],
             'num_with_score': 0,
-            'inventor_categories': getCategory(patent_data['patent_id'],remote_cursor)
+            'inventor_categories': getCategory(patent_data['patent_id'], remote_cursor)
         }
 
         # 在合作者中删除本人，并将数据json化
@@ -147,8 +152,9 @@ for i in range(t):
         #     new_inventor_data['average_score'] =0
 
         # 为inventor_categories添加time信息
-        for category_id,category_data in new_inventor_data['inventor_categories'].items():
-            new_inventor_data['inventor_categories'][category_id]['time'] = [patent_data['time']]
+        for category_id, category_data in new_inventor_data['inventor_categories'].items():
+            new_inventor_data['inventor_categories'][category_id]['time'] = [
+                patent_data['time']]
         new_inventor_data["inventor_categories"] = json.dumps(
             new_inventor_data["inventor_categories"], ensure_ascii=False)
 
@@ -265,7 +271,8 @@ for i in range(t):
             old_inventor_categories = json.loads(
                 old_inventor_data['inventor_categories'])
             update_inventor_data['inventor_categories'] = old_inventor_categories
-            new_inventor_categories = json.loads(new_inventor_data['inventor_categories'])
+            new_inventor_categories = json.loads(
+                new_inventor_data['inventor_categories'])
             # print(new_inventor_categories)
             for category_id in new_inventor_categories:
                 if category_id not in old_inventor_categories:

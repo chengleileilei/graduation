@@ -1,4 +1,3 @@
-from unicodedata import category
 import pymysql
 import os
 import json

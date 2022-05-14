@@ -11,7 +11,7 @@ file_names = ['A-人类生活必需品.xlsx', 'B--作业；运输.xlsx', 'C-- �
 
 for file_name in file_names:
     table_name = 'ipc_'+file_name[0:1]
-    df = pd.read_excel(root_dir+'/'+file_name, header=None, names=["ipc_number", "ipc_info"])
+    df = pd.read_excel(root_dir+'/'+file_name, header=None, names=["ipc_num", "ipc_info"])
 
     # 向下填充空白格并去重
     df = df.ffill().drop_duplicates()

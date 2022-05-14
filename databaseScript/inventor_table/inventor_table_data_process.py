@@ -2,7 +2,7 @@ import pymysql
 import os
 import json
 import ast
-from sql_functions import getCategory
+from sql_functions import getCategory,getIpcinfo
 
 
 from disambugation import isDisambugation
@@ -37,7 +37,7 @@ for prop in patent_column_prop:
     patent_column_prop_sql += ','
 patent_column_prop_sql = patent_column_prop_sql[:-1]
 
-t = 1  # 设置处理数据的数量
+t = 10000  # 设置处理数据的数量
 for i in range(t):
     i += 1
     # 获取本地持久化的数据库已处理的最大id值
@@ -45,7 +45,7 @@ for i in range(t):
         max_patent_id = int(f.read())
     # print("table max_id is :", max_patent_id)
     sql = 'select '+patent_column_prop_sql+' from company_patent where id>' + \
-        str(max_patent_id) + ' order by id limit 1;'
+        str(max_patent_id) + ' order by id limit 10;'
     remote_cursor.execute(sql)
     data_result = remote_cursor.fetchall()[0]
 
@@ -130,11 +130,12 @@ for i in range(t):
                     'times': [patent_data['time']]
                 }
             }, ensure_ascii=False),
-            'patents_ipcs': json.dumps(dict(zip(patent_data['ipcs'], [[patent_data['time']]] * len(patent_data['ipcs']))), ensure_ascii=False),
+            'patents_ipcs': dict( zip( patent_data['ipcs'], [{'time':[patent_data['time']]}] * len(patent_data['ipcs']) ) ),
             'collaborators': dict(
                 zip([current_inventors[kv[0]]['inventor_id'] for kv in current_inventors.items()],
                     [dict(zip(['name', 'patent_ids', 'times'], [kv[0], [patent_data['patent_id']], [patent_data['time']]]))
-                        for kv in current_inventors.items()]
+                        for kv in current_inventors.items()
+                     ]
                     )),
             'average_score': patent_data['patent_score'],
             'num_with_score': 0,
@@ -149,7 +150,7 @@ for i in range(t):
         if new_inventor_data['average_score'] != None:
             new_inventor_data['num_with_score'] = 1
         # else:
-        #     new_inventor_data['average_score'] =0
+        #     new_inventor_data['average_score'] =-1
 
         # 为inventor_categories添加time信息
         for category_id, category_data in new_inventor_data['inventor_categories'].items():
@@ -157,6 +158,13 @@ for i in range(t):
                 patent_data['time']]
         new_inventor_data["inventor_categories"] = json.dumps(
             new_inventor_data["inventor_categories"], ensure_ascii=False)
+        # 为patent_ipc添加ipc_info中具体信息
+        for ipc_num in new_inventor_data['patents_ipcs']:
+            # print(new_inventor_data['patents_ipcs'][ipc_num])
+            new_inventor_data['patents_ipcs'][ipc_num]['ipc_info'] = getIpcinfo(ipc_num,local_cursor)
+        new_inventor_data["patents_ipcs"] = json.dumps(
+            new_inventor_data["patents_ipcs"], ensure_ascii=False)
+
 
         if current_inventors[ck]['tag'] == 'new':
             # 构造sql写入一条新的inventor数据
@@ -211,7 +219,7 @@ for i in range(t):
                 update_inventor_data['inventor_patents_totalnum'] = old_inventor_data['inventor_patents_totalnum'] + 1
                 # print(new_inventor_data['num_with_score'], '**************')
                 if new_inventor_data['num_with_score'] != 0:
-                    if old_inventor_data['num_with_score'] != None:
+                    if old_inventor_data['num_with_score'] != 0:
                         update_inventor_data['num_with_score'] = old_inventor_data['num_with_score'] + 1
                         update_inventor_data['average_score'] = (
                             old_inventor_data['average_score'] * old_inventor_data['num_with_score'] + new_inventor_data['average_score']) / update_inventor_data['num_with_score']
@@ -247,7 +255,7 @@ for i in range(t):
                 if ipc not in old_patents_ipcs:
                     update_inventor_data['patents_ipcs'][ipc] = new_patents_ipcs[ipc]
                 else:
-                    update_inventor_data['patents_ipcs'][ipc] += new_patents_ipcs[ipc]
+                    update_inventor_data['patents_ipcs'][ipc]['time'] += new_patents_ipcs[ipc]['time']
             update_inventor_data['patents_ipcs'] = json.dumps(
                 update_inventor_data['patents_ipcs'], ensure_ascii=False)
 

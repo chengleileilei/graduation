@@ -9,14 +9,22 @@ import pymysql
 def getCategory(patent_id,cursor):
     sql_get_industry_category_id = 'SELECT industry_category from company WHERE id in ( SELECT company_id from company_patent WHERE id = "'+str(patent_id)+'" );'
     cursor.execute(sql_get_industry_category_id)
-    r = cursor.fetchone()
-    # print("sql_function print :",r,"patent_id:",patent_id)
+    r = cursor.fetchone() 
+    print("sql_function print :",r,type(r),"patent_id:",patent_id)
+
+    # 处理company_id无效的情况
+    if r == None:
+        return {}
+
+    # 处理industry_category 值为'None'的情况
+    if r[0] == 'None':
+        return {}
 
     try:
         category_ids = eval(r[0])
     except:
         return {}
-    # print(category_ids)
+    # print(type(category_ids),category_ids)
     result= {}
     for id in category_ids:
         sql_get_category_name = 'SELECT name from industry_domain WHERE id = ' + id+';'
@@ -26,4 +34,31 @@ def getCategory(patent_id,cursor):
     return result
 
 
-# print(getCategory("77735"))
+# in: ipc号
+# out: ipc号在ipc_info数据表中对应的info列表
+def getIpcinfo(ipc_num,cursor):
+    sql_get_ipcinfo = 'select ipc_info from ipc_info where ipc_num="' + ipc_num + '";'
+    cursor.execute(sql_get_ipcinfo)
+    res_tuple = cursor.fetchall()
+    # print(res_tuple)
+    res = []
+    for t in res_tuple:
+        # print(t)
+        res.append(t[0])
+    return(res)
+
+if __name__=="__main__":
+    try:
+        local_db = pymysql.connect(host='localhost',
+                                user='root',
+                                password='password',
+                                database='report')
+    except:
+        print("connect database fail!")
+    local_cursor = local_db.cursor()
+    r = getIpcinfo('H',local_cursor)
+    print(r)
+
+
+
+

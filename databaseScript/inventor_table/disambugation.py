@@ -28,9 +28,9 @@ def isDisambugation(name, patent_data, cursor):
         'company_ids': [str(patent_data['company_id'])]
     }
     source_data['collaborator_names'].remove(name)
-    print("->source_data: ")
-    for k, v in source_data.items():
-        print(k, ':', v)
+    # print("->source_data: ")
+    # for k, v in source_data.items():
+    #     print(k, ':', v)
     for same_id in same_name_ids:
 
         # 获取id池中每一个同名发明家的数据并分别计算相似性指标存入same_name_ids字典中
@@ -48,9 +48,9 @@ def isDisambugation(name, patent_data, cursor):
         target_data["ipcs"] = [ipc for ipc in target_res_dic[1]]
         target_data["company_ids"] = [
             company_id for company_id in target_res_dic[2]]
-        print("->target_data: ")
-        for k, v in target_data.items():
-            print(k, ':', v)
+        # print("->target_data: ")
+        # for k, v in target_data.items():
+        #     print(k, ':', v)
         same_name_ids[same_id] = getSimilarity(source_data, target_data)
     
     # 获取相似性评分最高的id值
@@ -82,7 +82,10 @@ def getSimilarity(source_data, target_data):
         list1 = source_data[k]
         list2 = target_data[k]
         common_num = getCommonNum(list1, list2)
-        similarity_dic[k] = (common_num/(len(list1)+len(list2)-common_num) +
+        if len(list1) == 0 or len(list2) == 0:
+            similarity_dic[k] = 0
+        else:
+            similarity_dic[k] = (common_num/(len(list1)+len(list2)-common_num) +
                              common_num/len(list1) +
                              common_num/len(list2)) / 3
         res += similarity_dic[k] *weight[k]

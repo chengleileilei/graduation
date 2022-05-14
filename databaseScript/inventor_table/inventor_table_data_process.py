@@ -2,8 +2,11 @@ import pymysql
 import os
 import json
 import ast
-from sql_functions import getCategory,getIpcinfo
+from sql_functions import getCategory,getIpcinfo,getPatentNumScore,writeIpcTopInventor
 
+# 设置计算T_index指标专利数量和专利平均分的权重
+w_patent_score= 0.5
+w_patent_num= 0.5
 
 from disambugation import isDisambugation
 
@@ -45,7 +48,7 @@ for i in range(t):
         max_patent_id = int(f.read())
     # print("table max_id is :", max_patent_id)
     sql = 'select '+patent_column_prop_sql+' from company_patent where id>' + \
-        str(max_patent_id) + ' order by id limit 10;'
+        str(max_patent_id) + ' order by id limit 1;'
     remote_cursor.execute(sql)
     data_result = remote_cursor.fetchall()[0]
 
@@ -139,7 +142,8 @@ for i in range(t):
                     )),
             'average_score': patent_data['patent_score'],
             'num_with_score': 0,
-            'inventor_categories': getCategory(patent_data['patent_id'], remote_cursor)
+            'inventor_categories': getCategory(patent_data['patent_id'], remote_cursor),
+            'T_index':0
         }
 
         # 在合作者中删除本人，并将数据json化
@@ -149,6 +153,7 @@ for i in range(t):
         # 判断是否为有评分专利
         if new_inventor_data['average_score'] != None:
             new_inventor_data['num_with_score'] = 1
+            new_inventor_data['T_index'] = w_patent_num * getPatentNumScore(new_inventor_data['num_with_score']) + w_patent_score *new_inventor_data['average_score']
         # else:
         #     new_inventor_data['average_score'] =-1
 
@@ -209,7 +214,7 @@ for i in range(t):
             # 创建update_inventor_data存储更新后的数据
             update_inventor_data = {}
 
-            # 更新 patents_ids 和 inventor_patents_totalnum 和 average_score 以及 num_with_score
+            # 更新 patents_ids 和 inventor_patents_totalnum 和 average_score 以及 num_with_score及T_index
             old_patents_ids = ast.literal_eval(
                 old_inventor_data['patents_ids'])
             new_patent_id = new_inventor_data['patents_ids']
@@ -226,6 +231,10 @@ for i in range(t):
                     else:
                         update_inventor_data['num_with_score'] = old_inventor_data['num_with_score'] + 1
                         update_inventor_data['average_score'] = new_inventor_data['average_score']
+                    # 更新T_index
+                    update_inventor_data['T_index'] = w_patent_num * getPatentNumScore(update_inventor_data['num_with_score']) + w_patent_score *update_inventor_data['average_score']
+            
+
 
             # 更新 inventor_companys
             old_inventor_company = json.loads(
@@ -308,6 +317,10 @@ for i in range(t):
             local_cursor.execute(update_sql)
             local_db.commit()
             print('**更新旧inventor：', ck)
+        # 更新ipc_top_inventor各个大类排名
+        writeIpcTopInventor(new_inventor_data['inventor_id'],local_cursor)
+        local_db.commit()
+
 
     current_patent_id = patent_data['patent_id']
     with open(root_dir+'\\current_patent_id.txt', 'w', encoding="utf-8")as f:

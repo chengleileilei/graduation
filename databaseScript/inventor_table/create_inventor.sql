@@ -1,4 +1,4 @@
-CREATE TABLE  if not exists  `inventors`
+CREATE TABLE `inventors`
 (
     `inventor_id`               int         NOT NULL AUTO_INCREMENT,
     `inventor_name`             varchar(50) NOT NULL,
@@ -10,6 +10,7 @@ CREATE TABLE  if not exists  `inventors`
     `collaborators`             json  DEFAULT NULL,
     `num_with_score`            int   DEFAULT NULL,
     `average_score`             float DEFAULT NULL,
+    `T_index`                   float DEFAULT NULL,
     `inventor_categories`       json  DEFAULT NULL,
     PRIMARY KEY (`inventor_id`)
 ) ENGINE = InnoDB

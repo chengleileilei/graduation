@@ -1,5 +1,4 @@
 import pymysql
-from pytest import console_main
 import json
 
 

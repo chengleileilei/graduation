@@ -1,7 +1,4 @@
 # 提供抽取inventor数据时操作数据库的各种方法
-from time import time
-from matplotlib.pyplot import table
-from numpy import insert
 import pymysql
 import json
 

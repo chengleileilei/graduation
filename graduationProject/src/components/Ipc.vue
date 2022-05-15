@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h2> This is about page!</h2>
+        <h2> This is 人才统计 page!</h2>
         <p>Hello, it is practice of router! about page</p>
         <p>{{ msg }}</p>
     </div>
@@ -8,17 +8,15 @@
 
 <script>
 export default {
-  name: 'about',
+  name: 'ipc',
   data () {
     return {
-      msg: 'about.p'
+      msg: ''
     }
   }
 }
 </script>
 
 <style>
-h2{
-    color: rgb(255, 0, 0);
-}
+
 </style>

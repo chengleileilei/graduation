@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h2> This is 首页 page!</h2>
+        <h2> This is 人才检索 page!</h2>
         <p>Hello, it is practice of router! about page</p>
         <p>{{ msg }}</p>
     </div>
@@ -8,7 +8,7 @@
 
 <script>
 export default {
-  name: 'home',
+  name: 'ipc',
   data () {
     return {
       msg: ''

@@ -1,10 +1,14 @@
 <template>
   <div class="centered">
-    <p>{{ this.id }}</p>
+    <!-- <p>{{ this.id }}</p> -->
+    <!-- <el-button @click="routerTo(id)" class="info-btn">前往主页</el-button> -->
+    <div class="info-btn-wrap">
+
+    <p @click="routerTo(id)" class="info-btn" >前往主页</p>
+    </div>
 
     <p>姓名：{{ data.inventor_name }}</p>
     <!-- <p>公司：{{ data.inventor_companys }}</p> -->
-    <p>公司</p>
     <div v-for="(item, index) in companyList" :key="index">
       <p>
         {{ item.company_name[0] }} {{ item.start_time }}-{{
@@ -16,21 +20,13 @@
     <p>专利数量：{{ data.inventor_patents_totalnum }}</p>
     <p>专利质量综合评分：{{ data.average_score }}</p>
     <p>发明家质量综合评分：{{ data.T_index }}</p>
-    <!-- <p>合作者：{{data.collaborators}}</p> -->
-    <div v-for="(item, index) in collaboratorList" :key="index">
+    <!-- <p>合作者</p> -->
+    <!-- <div v-for="(item, index) in collaboratorList" :key="index">
       <p>{{ item.name }} : {{ item.num }}</p>
-    </div>
+    </div> -->
     <p>研究领域</p>
     <div v-for="(item, index) in data.inventor_categories" :key="index">
       <p>{{ item.category_name }}:{{ item.time.length }}</p>
-    </div>
-    <p>专利列表</p>
-    <div v-for="(item, index) in data.patents_ids" :key="index">
-      <p>专利id：{{ item }}</p>
-    </div>
-    <p>ipc分类信息</p>
-    <div v-for="(item, index) in data.patents_ipcs" :key="index">
-      <p>ipc号：{{ index }} 发表{{ item.time.length }}次 {{ item.ipc_info }}</p>
     </div>
   </div>
 </template>
@@ -38,9 +34,9 @@
 <script>
 export default {
   name: "Inventor",
+  props: ["id"],
   data() {
     return {
-      id: this.$route.params.id,
       data: {},
       companyList: [],
       collaboratorList: [],
@@ -99,6 +95,10 @@ export default {
       });
   },
   methods: {
+    routerTo(id) {
+      console.log("tettttt")
+      this.$router.push("/inventor/" + id);
+    },
     arrayMax(arrs) {
       var max = arrs[0];
       for (var i = 1, ilen = arrs.length; i < ilen; i++) {
@@ -122,4 +122,17 @@ export default {
 </script>
 
 <style>
+.info-btn-wrap{
+  display: flex;
+  flex-direction: row;
+
+}.info-btn{
+  display: flex;
+  flex-direction: row;
+  cursor: pointer;
+  border: 1px solid black;
+  border-radius: 5px;
+  margin: 5px;
+  padding: 10px;
+}
 </style>

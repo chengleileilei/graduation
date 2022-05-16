@@ -10,7 +10,10 @@
         </div>
       </div>
     </el-row>
+    <keep-alive>
+
     <router-view />
+    </keep-alive>
 
     <el-row>
       <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24" class="footer-wrap">

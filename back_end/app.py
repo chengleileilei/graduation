@@ -88,7 +88,15 @@ def getInventorInfoAll():
     inventor_id = request.args.get("id")
     # print(inventor_id)
 
-    cursor = local_db.cursor(cursor=pymysql.cursors.DictCursor)
+    try:
+        brief_db = pymysql.connect(host='localhost',
+                                   user='root',
+                                   password='password',
+                                   database='report')
+    except:
+        print("connect database fail!")
+
+    cursor = brief_db.cursor(cursor=pymysql.cursors.DictCursor)
     column_names = ['inventor_id', 'inventor_name', 'patents_ids', 'patents_ipcs', 'inventor_companys', 'collaborators', 'inventor_categories',
                     'inventor_patents_totalnum', 'average_score', 'T_index']
     sql_column = ''

@@ -1,7 +1,7 @@
 <template>
   <div class="ipc-card">
     <p>{{ inventorInforBrief.inventor_name }}</p>
-    <p>id: {{ inventorInforBrief.inventor_id }}</p>
+    <!-- <p>id: {{ inventorInforBrief.inventor_id }}</p> -->
     <p>指数：{{ formattScore }}</p>
     <p>专利数量：{{ inventorInforBrief.inventor_patents_totalnum }}</p>
     <p>T指数：{{ inventorInforBrief.T_index }}</p>

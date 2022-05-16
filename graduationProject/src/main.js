@@ -7,6 +7,9 @@ import axios from 'axios'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 
+import InventorCard from "@/components/InventorCard.vue"
+Vue.component("InventorCard", InventorCard)
+
 Vue.prototype.$axios = axios; // 把对象挂载vue中
 Vue.use(ElementUI)
 

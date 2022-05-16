@@ -4,6 +4,8 @@ import Home from '@/components/Home.vue'
 import Example from '@/components/Example.vue'
 import Ipc from '@/components/Ipc.vue'
 import Search from '@/components/Search.vue'
+// import inventor from '@/components/Search.vue'
+import Inventor from '@/components/inventorPage/Inventor.vue'
 
 Vue.use(Router)
 
@@ -24,6 +26,10 @@ export default new Router({
             path: '/search',
             name: 'search',
             component: Search
+        }, , {
+            path: '/inventor/:id/',
+            name: 'inventor',
+            component: Inventor
         },
         {
             path: '/example',

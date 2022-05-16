@@ -21,7 +21,7 @@ def index():
 
 
 # 返回ipc_top_inventor表中全部信息
-
+# http://127.0.0.1:5000/ipc_category_info
 @app.route('/ipc_category_info')
 def getIpcCategoryInfo():
     # ipc_word = request.args.get("ipc_category")
@@ -49,12 +49,21 @@ def getIpcCategoryAllInventors():
 
 
 # 返回对应inventor的简要信息
+# http://127.0.0.1:5000/inventor_info_brief?id=1
 @app.route('/inventor_info_brief')
 def getInventorInfoBrief():
     inventor_id = request.args.get("id")
     # print(inventor_id)
 
-    cursor = local_db.cursor(cursor=pymysql.cursors.DictCursor)
+    try:
+        brief_db = pymysql.connect(host='localhost',
+                                   user='root',
+                                   password='password',
+                                   database='report')
+    except:
+        print("connect database fail!")
+
+    cursor = brief_db.cursor(cursor=pymysql.cursors.DictCursor)
     column_names = ['inventor_id', 'inventor_name', 'inventor_companys',
                     'inventor_patents_totalnum', 'average_score', 'T_index']
     sql_column = ''
@@ -69,10 +78,11 @@ def getInventorInfoBrief():
     inventor_brief_info = cursor.fetchone()
     # print(inventor_brief_info)
 
-    return jsonify(inventor_brief_info)
+    return inventor_brief_info
 
 
 # 返回inventor全部信息
+# http://127.0.0.1:5000/inventor_info_all?id=1
 @app.route('/inventor_info_all')
 def getInventorInfoAll():
     inventor_id = request.args.get("id")
@@ -97,6 +107,7 @@ def getInventorInfoAll():
 
 
 # 根据patent_id返回专利信息
+# http://127.0.0.1:5000/patent_info?id=77735
 @app.route('/patent_info')
 def getPatentInfo():
     patent_id = request.args.get("id")

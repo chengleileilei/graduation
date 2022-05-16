@@ -94,7 +94,7 @@ export default {
         color: #000;    /* 去除默认的颜色和点击后变化的颜色 */ 
     }
 .centered {
-  max-width: 1440px;
+  max-width: 1420px;
   margin: 0 auto;
 }
 /* #app {
@@ -108,6 +108,9 @@ export default {
 .nav-wrap {
   background-color: #f8f8f8;
   border-bottom: 1px solid #e7e7e7;
+  /* display: flex;
+  flex-direction: row;
+  justify-content: center; */
 }
 .nav {
   height: 70px;

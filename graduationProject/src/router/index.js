@@ -4,8 +4,8 @@ import Home from '@/components/Home.vue'
 import Example from '@/components/Example.vue'
 import Ipc from '@/components/Ipc.vue'
 import Search from '@/components/Search.vue'
-// import inventor from '@/components/Search.vue'
 import Inventor from '@/components/inventorPage/Inventor.vue'
+// import IpcMain from '@/components/ipcSub/IpcMain.vue'
 
 Vue.use(Router)
 
@@ -21,7 +21,11 @@ export default new Router({
         }, {
             path: '/ipc',
             name: 'ipc',
-            component: Ipc
+            component: Ipc,
+            // children: [{
+            //     path: 'category/:firstword',
+            //     component: IpcMain
+            // }]
         }, {
             path: '/search',
             name: 'search',

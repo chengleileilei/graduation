@@ -2,7 +2,6 @@
   <div class="centered">
     <h2>This is 首页 page!</h2>
     <!-- <Card :id="1" score = "100"></Card> -->
-    <p>Hello, it is practice of router! about page</p>
     <!-- <p>{{ ipcData }}</p> -->
     <el-row :gutter="20" class="centered">
       <el-col
@@ -41,7 +40,7 @@
 </template>
 
 <script>
-import Card from "./ipcSub/IpcCard.vue";
+import Card from "./homeSub/IpcCard.vue";
 export default {
   name: "home",
   components: {
@@ -50,7 +49,7 @@ export default {
   data() {
     return {
       ipcData: "",
-      data: "this.data",
+      // data: "this.data",
     };
   },
   created() {},

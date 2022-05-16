@@ -16,8 +16,7 @@
     <p>专利数量：{{ data.inventor_patents_totalnum }}</p>
     <p>专利质量综合评分：{{ data.average_score }}</p>
     <p>发明家质量综合评分：{{ data.T_index }}</p>
-    <!-- <p>合作者：{{data.collaborators}}</p> -->
-    <div v-for="(item, index) in collaboratorList" :key="index">
+    <div v-for="(item, index2) in collaboratorList" :key="index2">
       <p>{{ item.name }} : {{ item.num }}</p>
     </div>
     <p>研究领域</p>
@@ -118,6 +117,19 @@ export default {
       return min;
     },
   },
+  watch:{
+    id_public_goods_type:{
+        handler(val){
+            // 检测到数据变化
+            if(val&&val!=this.$route.params.id){
+                this.id=val;
+                // 刷新页面
+                this.$nextTick(this.refresh);
+            };
+        },
+        immediate:true
+    }
+},
 };
 </script>
 

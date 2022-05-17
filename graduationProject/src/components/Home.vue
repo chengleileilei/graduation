@@ -1,6 +1,6 @@
 <template>
   <div class="centered">
-    <h2>This is 首页 page!</h2>
+    <!-- <h2>This is 首页 page!</h2> -->
     <!-- <Card :id="1" score = "100"></Card> -->
     <!-- <p>{{ ipcData }}</p> -->
     <el-row :gutter="20" class="centered">

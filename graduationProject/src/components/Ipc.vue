@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>This is 人才统计 page!</h2>
+    <!-- <h2>This is 人才统计 page!</h2> -->
     <el-container>
       <el-aside width="200px" class="ipc-menu"
         >Aside
@@ -72,7 +72,7 @@ export default {
   border: solid 1px black;
 }
 .ipc-main {
-  border: solid 1px yellowgreen;
+  /* border: solid 1px yellowgreen; */
   max-height: 1000px;
 }
 .ipc-router-wrap>p{

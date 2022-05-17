@@ -1,8 +1,7 @@
 <template>
   <div>
+    <h1>{{ topData.ipc_category }} {{topData.ipc_category_info}}</h1>
     <!-- {{ topData }} -->
-    <!-- <p>-----</p>
-    {{ topData.top_inventors }} -->
     <p>高权重发明家</p>
     <div
       v-for="(item, index_ipc_main) in topData.top_inventors"
@@ -13,12 +12,8 @@
       <InventorCard :id="item.id"></InventorCard>
     </div>
     <p>全部发明家</p>
-    <p>{{this.allInventors}}</p>
-    <div
-      v-for="(id, index) in allInventors"
-      :key="index"
-      class="ipc-top-wrap"
-    >
+    <p>{{ this.allInventors }}</p>
+    <div v-for="(id, index) in allInventors" :key="index" class="ipc-top-wrap">
       <!-- {{ item.id }} -->
       <InventorCard :id="id"></InventorCard>
     </div>
@@ -39,14 +34,18 @@ export default {
   //   props: ["topData"],
   data() {
     return {
-      allInventors:[]
+      allInventors: [],
       //   firstWord: this.$route.params.firstword,
     };
   },
   created() {
     this.$axios
-      .get("http://127.0.0.1:5000/ipc_category_all_inventors", { params: {'ipc_category':this.topData.ipc_category} })
-      .then((response) => {this.allInventors = response.data});
+      .get("http://127.0.0.1:5000/ipc_category_all_inventors", {
+        params: { ipc_category: this.topData.ipc_category },
+      })
+      .then((response) => {
+        this.allInventors = response.data;
+      });
   },
   updated() {
     //   this.mydata = this.topData

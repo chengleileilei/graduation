@@ -1,6 +1,6 @@
 <template>
   <div class="centered">
-    <h2>人才检索</h2>
+    <h1>人才检索</h1>
     <el-row class="search-wrap">
       <input
         type="text"

@@ -20,10 +20,12 @@
     <p>专利数量：{{ data.inventor_patents_totalnum }}</p>
     <p>专利质量综合评分：{{ data.average_score }}</p>
     <p>发明家质量综合评分：{{ data.T_index }}</p>
+
     <!-- <p>合作者</p> -->
     <!-- <div v-for="(item, index) in collaboratorList" :key="index">
       <p>{{ item.name }} : {{ item.num }}</p>
     </div> -->
+
     <p>研究领域</p>
     <div v-for="(item, index) in data.inventor_categories" :key="index">
       <p>{{ item.category_name }}:{{ item.time.length }}</p>

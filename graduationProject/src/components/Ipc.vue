@@ -73,7 +73,7 @@ export default {
 }
 .ipc-main {
   /* border: solid 1px yellowgreen; */
-  max-height: 1000px;
+  /* max-height: 1000px; */
 }
 .ipc-router-wrap>p{
   font-size: 18px;

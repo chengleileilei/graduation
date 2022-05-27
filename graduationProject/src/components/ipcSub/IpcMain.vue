@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>{{ topData.ipc_category }} {{topData.ipc_category_info}}</h1>
+    <h1>{{ topData.ipc_category }} {{ topData.ipc_category_info }}</h1>
     <!-- {{ topData }} -->
     <p>高权重发明家</p>
     <div
@@ -13,9 +13,31 @@
     </div>
     <p>全部发明家</p>
     <p>{{ this.allInventors }}</p>
-    <div v-for="(id, index) in allInventors" :key="index" class="ipc-top-wrap">
-      <!-- {{ item.id }} -->
+    <p>currInventors发明家</p>
+    <button @click="load">加2</button>
+    <p>{{ currInventors }}</p>
+
+    <!-- <ul v-infinite-scroll="load" style="overflow: auto">
+      <div
+        v-for="(id, index) in currInventors"
+        :key="index"
+        class="ipc-top-wrap"
+      >
+      lalalal
+        {{ item.id }}
+        <InventorCard :id="id"></InventorCard>
+      </div>
+    </ul> -->
+
+    <!-- <div v-for="(id, index) in allInventors" :key="index" class="ipc-top-wrap">
+      {{ item.id }}
       <InventorCard :id="id"></InventorCard>
+    </div> -->
+    <div v-infinite-scroll="load" style="overflow: auto" class="scoll-wrap">
+      <div v-for="(id, index) in currInventors" :key="index" class="ipc-top-wrap">
+        {{ id }}
+        <InventorCard :id="id"></InventorCard>
+      </div>
     </div>
   </div>
 </template>
@@ -36,6 +58,8 @@ export default {
     return {
       allInventors: [],
       //   firstWord: this.$route.params.firstword,
+      currInventors: [],
+      currCount: 0,
     };
   },
   created() {
@@ -45,8 +69,29 @@ export default {
       })
       .then((response) => {
         this.allInventors = response.data;
+        var n = 0;
+        for (let i = n; i < n + 5; i++) {
+          if (i >= this.allInventors.length) {
+            break;
+          }
+          this.currInventors.push(this.allInventors[i]);
+          this.currCount += 1;
+        }
       });
   },
+  methods: {
+    load() {
+      var n = this.currCount;
+      for (let i = n; i < n + 2; i++) {
+        if (i >= this.allInventors.length) {
+          break;
+        }
+        this.currInventors.push(this.allInventors[i]);
+        this.currCount += 1;
+      }
+    },
+  },
+
   updated() {
     //   this.mydata = this.topData
     //   console.log('mydata:',mydata)
@@ -76,5 +121,8 @@ export default {
   border-radius: 10px;
   padding: 10px;
   margin: 10px;
+}
+.scoll-wrap{
+  max-height: 500px;
 }
 </style>

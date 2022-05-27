@@ -145,7 +145,7 @@ def getPatentInfo():
 @app.route('/search_inventors')
 def getInventorsByName():
     name = request.args.get('name')
-    sql = "select inventor_id from inventors where inventor_name = '" + name + "';"
+    sql = "select inventor_id from inventors where inventor_name like '%" + name + "%';"
     cursor = local_db.cursor()
     cursor.execute(sql)
     res_tuple = cursor.fetchall()

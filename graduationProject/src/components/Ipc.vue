@@ -2,17 +2,24 @@
   <div>
     <!-- <h2>This is 人才统计 page!</h2> -->
     <el-container>
-      <el-aside width="200px" class="ipc-menu"
-        >
-        <div v-for="(item, index) in ipcData" :key="index">
+      <el-aside width="200px" class="ipc-menu">
+        <p class="aside-tit">分类</p>
+        <!-- <div v-for="(item, index) in ipcData" :key="index">
           <div @click="changeCurrentWord(index)" class="ipc-router-wrap">
             <p>{{ item.ipc_category }} {{ item.ipc_category_info }}</p>
           </div>
-        </div>
+        </div> -->
+
+          <div v-for="(item, index) in ipcData" :key="index" @click="changeCurrentWord(index)" class="ipc-router-wrap">
+            <p>{{ item.ipc_category }} {{ item.ipc_category_info }}</p>
+          </div>
+
       </el-aside>
-      <el-main class="ipc-main"
-        >
-        <IpcMain :topData="ipcData[currentIndex]" :key="new Date().getTime()"></IpcMain>
+      <el-main class="ipc-main">
+        <IpcMain
+          :topData="ipcData[currentIndex]"
+          :key="new Date().getTime()"
+        ></IpcMain>
         <!-- 传入一个变化参数作为key，让组件及时进行数据更新 -->
         <!-- <router-view /> -->
       </el-main>
@@ -69,26 +76,30 @@ export default {
 
 <style>
 .ipc-menu {
- 
+background-color: #f8f8f8;
 }
 .ipc-main {
   /* border: solid 1px yellowgreen; */
   /* max-height: 1000px; */
 }
-.ipc-router-wrap>p{
+.aside-tit {
+  text-align: center;
+  font-size: 26px;
+  font-weight: 700;
+  color: #3e38a3;
+}
+.ipc-router-wrap > p {
   font-size: 18px;
-      font-weight: 500;
-
+  font-weight: 500;
 }
-.ipc-router-wrap{
+.ipc-router-wrap {
   cursor: pointer;
-  /* background-color: burlywood; */
-  margin-bottom: 10px;
-  /* padding: 10px; */
+  border: 1px solid black;
+  padding: 10px;
 }
 
-.ipc-router-wrap>p:hover{
-    color: rgb(21, 1, 77);
-    font-weight: 800;
+.ipc-router-wrap > p:hover {
+  color: rgb(21, 1, 77);
+  font-weight: 800;
 }
 </style>

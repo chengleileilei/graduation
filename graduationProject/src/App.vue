@@ -144,7 +144,6 @@ export default {
 }
 
 .footer-wrap {
-  margin-top: 10px;
 
   background-color: rgba(45, 45, 45, 1);
 }

@@ -2,7 +2,7 @@ import pymysql
 import os
 import json
 import ast
-from sql_functions import getCategory,getIpcinfo,getPatentNumScore,writeIpcTopInventor
+from sql_functions import getCategory,getIpcinfo,getPatentNumScore,writeIpcTopInventor,getCompanyName
 
 # 设置计算T_index指标专利数量和专利平均分的权重
 w_patent_score= 0.5
@@ -56,7 +56,7 @@ for i in range(t):
     patent_data = {
         'patent_id': data_result[0],
         'company_id': data_result[1],
-        'company_name': ast.literal_eval(data_result[2]),
+        'company_name': [getCompanyName(data_result[1],remote_cursor)],
         # 将字符串数组转化为真正数组
         'inventors': ast.literal_eval(data_result[3]) + ast.literal_eval(data_result[4]),
         'ipcs': ast.literal_eval(data_result[5]),

@@ -27,7 +27,11 @@
         </div>
       </div>
 
-      <div v-for="(item, index) in companyList" :key="index" class="company-wrap">
+      <div
+        v-for="(item, index) in companyList"
+        :key="index"
+        class="company-wrap"
+      >
         <p>
           <span class="el-icon-s-home"></span>
           {{ item.company_name[0] }} {{ item.start_time }}-{{
@@ -38,9 +42,12 @@
       </div>
 
       <!-- <p>合作者</p> -->
-      <!-- <div v-for="(item, index) in collaboratorList" :key="index">
-      <p>{{ item.name }} : {{ item.num }}</p>
-    </div> -->
+      <div class="collaborator-wrap">
+        <p><span class="el-icon-user-solid"></span>合作者：</p>
+        <div v-for="(item, index) in collaboratorList.slice(0, 5)" :key="index">
+          <p @click="routerTo(item.id)" class="collaborator-text">{{ item.name }}({{ item.num }})</p>
+        </div>
+      </div>
 
       <p>研究领域</p>
       <div v-for="(item, index) in data.inventor_categories" :key="index">
@@ -220,7 +227,20 @@ export default {
   border: 1px solid #869ed4;
 }
 /* 公司信息 */
-.company-wrap{
+.company-wrap {
   margin-bottom: 5px;
+}
+/* 合作者信息 */
+.collaborator-wrap{
+  display: flex;
+  flex-direction: row;
+}
+.collaborator-text{
+  margin-right: 10px;
+  cursor: pointer;
+}
+.collaborator-text:hover{
+  color: #3e38a3;
+  text-decoration-line: underline;
 }
 </style>

@@ -187,6 +187,17 @@ def writeIpcInventors(ipc_firt_word, invnetor_id, cursor):
     cursor.execute(insert_sql)
     return
 
+def getCompanyName(id,cursor):
+    sql = "select full_name from company where id="+str(id)+";"
+    cursor.execute(sql)
+    name = cursor.fetchone()
+    if name==None:
+        return "暂无公司名"
+    else:
+        return name[0]
+    
+
+
 
 if __name__ == "__main__":
     try:
@@ -201,5 +212,15 @@ if __name__ == "__main__":
     # print(r)\
 
     # print(getPatentNumScore(22))
-    writeIpcTopInventor(343, local_cursor)
-    local_db.commit()
+    # writeIpcTopInventor(343, local_cursor)
+    # local_db.commit()
+    try:
+        remote_db = pymysql.connect(host='120.27.209.14',
+                                    port=22936,
+                                    user='junshi',
+                                    password='junshi_suwen',
+                                    database='Report')
+    except:
+        print("connect database fail!")
+    remote_cusror = remote_db.cursor()
+    print(getCompanyName(183997,remote_cusror))

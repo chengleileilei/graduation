@@ -3,7 +3,7 @@
     <!-- <h2>This is 人才统计 page!</h2> -->
     <el-container>
       <el-aside width="200px" class="ipc-menu"
-        >Aside
+        >
         <div v-for="(item, index) in ipcData" :key="index">
           <div @click="changeCurrentWord(index)" class="ipc-router-wrap">
             <p>{{ item.ipc_category }} {{ item.ipc_category_info }}</p>
@@ -69,7 +69,7 @@ export default {
 
 <style>
 .ipc-menu {
-  border: solid 1px black;
+ 
 }
 .ipc-main {
   /* border: solid 1px yellowgreen; */

@@ -1,34 +1,51 @@
 <template>
-  <div class="centered">
-    <!-- <p>{{ this.id }}</p> -->
-    <!-- <el-button @click="routerTo(id)" class="info-btn">前往主页</el-button> -->
-    <div class="info-btn-wrap">
-
-    <p @click="routerTo(id)" class="info-btn" >前往主页</p>
+  <div class="centered inventor-card-wrap">
+    <!-- <div class="info-btn-wrap">
+      <p @click="routerTo(id)" class="info-btn">前往主页</p>
+    </div> -->
+    <div class="avatar">
+      <img
+        src="@/assets/inventor_card/default_avatar.png"
+        alt=""
+        @click="routerTo(id)"
+      />
     </div>
 
-    <p>姓名：{{ data.inventor_name }}</p>
-    <!-- <p>公司：{{ data.inventor_companys }}</p> -->
-    <div v-for="(item, index) in companyList" :key="index">
-      <p>
-        {{ item.company_name[0] }} {{ item.start_time }}-{{
-          item.end_time
-        }}
-        贡献专利{{ item.num }}篇
+    <div class="inventor-info">
+      <p @click="routerTo(id)" class="inventor-name">
+        {{ data.inventor_name }}
       </p>
-    </div>
-    <p>专利数量：{{ data.inventor_patents_totalnum }}</p>
-    <p>专利质量综合评分：{{ data.average_score }}</p>
-    <p>发明家质量综合评分：{{ data.T_index }}</p>
+      <div class="index-wrap">
+        <div class="patent-num-wrap">
+          <p>专利数量：{{ data.inventor_patents_totalnum }}</p>
+        </div>
+        <div class="patent-score-wrap">
+          <p>专利质量综合评分：{{ data.average_score }}</p>
+        </div>
+        <div class="inventor-score-wrap">
+          <p>发明人综合评分：{{ data.T_index }}</p>
+        </div>
+      </div>
 
-    <!-- <p>合作者</p> -->
-    <!-- <div v-for="(item, index) in collaboratorList" :key="index">
+      <div v-for="(item, index) in companyList" :key="index" class="company-wrap">
+        <p>
+          <span class="el-icon-s-home"></span>
+          {{ item.company_name[0] }} {{ item.start_time }}-{{
+            item.end_time
+          }}
+          贡献专利{{ item.num }}篇
+        </p>
+      </div>
+
+      <!-- <p>合作者</p> -->
+      <!-- <div v-for="(item, index) in collaboratorList" :key="index">
       <p>{{ item.name }} : {{ item.num }}</p>
     </div> -->
 
-    <p>研究领域</p>
-    <div v-for="(item, index) in data.inventor_categories" :key="index">
-      <p>{{ item.category_name }}:{{ item.time.length }}</p>
+      <p>研究领域</p>
+      <div v-for="(item, index) in data.inventor_categories" :key="index">
+        <p>{{ item.category_name }}:{{ item.time.length }}</p>
+      </div>
     </div>
   </div>
 </template>
@@ -98,7 +115,7 @@ export default {
   },
   methods: {
     routerTo(id) {
-      console.log("tettttt")
+      console.log("tettttt");
       this.$router.push("/inventor/" + id);
     },
     arrayMax(arrs) {
@@ -124,11 +141,11 @@ export default {
 </script>
 
 <style>
-.info-btn-wrap{
+/* .info-btn-wrap {
   display: flex;
   flex-direction: row;
-
-}.info-btn{
+}
+.info-btn {
   display: flex;
   flex-direction: row;
   cursor: pointer;
@@ -136,5 +153,74 @@ export default {
   border-radius: 5px;
   margin: 5px;
   padding: 10px;
+} */
+.inventor-card-wrap {
+  margin: 10px;
+  outline: 1px solid rgba(173, 173, 173, 0.726);
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 3px 3px rgba(231, 230, 230, 0.89);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.inventor-card-wrap:hover {
+  outline: 2px solid rgba(197, 197, 197, 0.568);
+  box-shadow: 5px 5px rgba(231, 230, 230, 0.89);
+}
+
+/* 人物头像 */
+.avatar {
+  max-width: 130px;
+  padding-right: 10px;
+}
+.avatar img {
+  width: 100%;
+  cursor: pointer;
+  border-radius: 10px;
+}
+/* 人物信息 */
+.inventor-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.inventor-name {
+  font-size: 24px;
+  cursor: pointer;
+  font-weight: 800;
+}
+.inventor-name:hover {
+  color: #3e38a3;
+}
+
+/* 发明人评分信息 */
+.index-wrap {
+  display: flex;
+  flex-direction: row;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+.index-wrap > div {
+  margin-right: 10px;
+  border-radius: 2px;
+  padding: 2px 8px 2px 8px;
+}
+.index-wrap p {
+  font-size: 16px;
+  color: #000000d2;
+}
+.patent-num-wrap {
+  border: 1px solid #b7ce9d;
+}
+.patent-score-wrap {
+  border: 1px solid #ddb74e;
+}
+.inventor-score-wrap {
+  border: 1px solid #869ed4;
+}
+/* 公司信息 */
+.company-wrap{
+  margin-bottom: 5px;
 }
 </style>

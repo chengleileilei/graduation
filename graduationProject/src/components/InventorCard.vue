@@ -44,14 +44,23 @@
       <!-- <p>合作者</p> -->
       <div class="collaborator-wrap">
         <p><span class="el-icon-user-solid"></span>合作者：</p>
+        <p  class="collaborator-text" v-if="collaboratorList.length==0">暂无数据</p>
         <div v-for="(item, index) in collaboratorList.slice(0, 5)" :key="index">
-          <p @click="routerTo(item.id)" class="collaborator-text">{{ item.name }}({{ item.num }})</p>
+          <p @click="routerTo(item.id)" class="collaborator-text">
+            {{ item.name }}({{ item.num }})
+          </p>
         </div>
       </div>
 
-      <p>研究领域</p>
-      <div v-for="(item, index) in data.inventor_categories" :key="index">
-        <p>{{ item.category_name }}:{{ item.time.length }}</p>
+      <div class="research-wrap">
+        <p><span class="el-icon-s-opportunity"></span>研究领域：</p>
+        <!-- <p>{{data.inventor_categories}}</p> -->
+        <p class="research-text" v-if="JSON.stringify(data.inventor_categories)=='{}'">暂无数据</p>
+        <div v-for="(item, index) in data.inventor_categories" :key="index">
+          <p class="research-text">
+            {{ item.category_name }}:{{ item.time.length }}
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -231,16 +240,28 @@ export default {
   margin-bottom: 5px;
 }
 /* 合作者信息 */
-.collaborator-wrap{
+.collaborator-wrap {
   display: flex;
   flex-direction: row;
+  margin-bottom: 5px;
 }
-.collaborator-text{
+.collaborator-text {
   margin-right: 10px;
   cursor: pointer;
 }
-.collaborator-text:hover{
+.collaborator-text:hover {
   color: #3e38a3;
   text-decoration-line: underline;
+}
+.research-wrap {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 5px;
+  align-items: center;
+}
+.research-text {
+  margin-right: 15px;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.795)
 }
 </style>

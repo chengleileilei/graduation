@@ -74,7 +74,7 @@ export default {
   methods: {
     load() {
       var n = this.currCount;
-      for (let i = n; i < n + 2; i++) {
+      for (let i = n; i < n + 3; i++) {
         if (i >= this.allInventors.length) {
           break;
         }

@@ -34,10 +34,10 @@
       >
         <p>
           <span class="el-icon-s-home"></span>
-          {{ item.company_name[0] }} {{ item.start_time }}-{{
+          {{ item.company_name[0] }}（贡献专利{{ item.num }}篇）{{ item.start_time }}至{{
             item.end_time
           }}
-          贡献专利{{ item.num }}篇
+          
         </p>
       </div>
 

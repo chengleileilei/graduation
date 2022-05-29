@@ -16,6 +16,10 @@ Vue.component("InventorCard", InventorCard)
 Vue.prototype.$axios = axios; // 把对象挂载vue中
 Vue.use(ElementUI)
 
+// 引入 echarts
+import * as echarts from 'echarts'
+Vue.prototype.$echarts = echarts
+
 
 
 Vue.config.productionTip = false

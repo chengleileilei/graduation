@@ -1,11 +1,18 @@
 <template>
   <div class="centered">
-     <div ref="monthWorkOrder" class="echarts-box" style="width: 600px; height: 300px; border: 1px solid red"></div>
-     <div ref="company-k" class="company-k-wrap"></div>
+    <!-- {{inventorData.inventor_companys}} -->
+    <!-- {{test}} -->
+    <!-- {{ companyChartData }} -->
+    <!-- <div
+      ref="monthWorkOrder"
+      class="echarts-box"
+      style="width: 600px; height: 300px; border: 1px solid red"
+    ></div> -->
+    <!-- {{inventorData.inventor_companys}} -->
     <p>{{ this.id }}</p>
 
-    <p>姓名：{{ data.inventor_name }}</p>
-    <!-- <p>公司：{{ data.inventor_companys }}</p> -->
+    <p>姓名：{{ inventorData.inventor_name }}</p>
+    <!-- <p>公司：{{ inventorData.inventor_companys }}</p> -->
     <p>公司</p>
     <div v-for="(item, index) in companyList" :key="index">
       <p>
@@ -14,23 +21,26 @@
         }}
         贡献专利{{ item.num }}篇
       </p>
+      <!-- {{item.id}} -->
+      <div ref="companyK" class="company-k-wrap" :id="String(item.id)"></div>
     </div>
-    <p>专利数量：{{ data.inventor_patents_totalnum }}</p>
-    <p>专利质量综合评分：{{ data.average_score }}</p>
-    <p>发明家质量综合评分：{{ data.T_index }}</p>
+
+    <p>专利数量：{{ inventorData.inventor_patents_totalnum }}</p>
+    <p>专利质量综合评分：{{ inventorData.average_score }}</p>
+    <p>发明家质量综合评分：{{ inventorData.T_index }}</p>
     <div v-for="(item, index2) in collaboratorList" :key="index2">
       <p>{{ item.name }} : {{ item.num }}</p>
     </div>
     <p>研究领域</p>
-    <div v-for="(item, index) in data.inventor_categories" :key="index">
+    <div v-for="(item, index) in inventorData.inventor_categories" :key="index">
       <p>{{ item.category_name }}:{{ item.time.length }}</p>
     </div>
     <p>专利列表</p>
-    <div v-for="(item, index) in data.patents_ids" :key="index">
+    <div v-for="(item, index) in inventorData.patents_ids" :key="index">
       <p>专利id：{{ item }}</p>
     </div>
     <p>ipc分类信息</p>
-    <div v-for="(item, index) in data.patents_ipcs" :key="index">
+    <div v-for="(item, index) in inventorData.patents_ipcs" :key="index">
       <p>ipc号：{{ index }} 发表{{ item.time.length }}次 {{ item.ipc_info }}</p>
     </div>
   </div>
@@ -42,9 +52,11 @@ export default {
   data() {
     return {
       id: this.$route.params.id,
-      data: {},
+      inventorData: {},
       companyList: [],
       collaboratorList: [],
+      test: "",
+      companyChartData: {},
     };
   },
   created() {
@@ -56,33 +68,42 @@ export default {
       })
       .then((response) => {
         // console.log(response)
-        this.data = response.data;
-        // console.log(this.data)
-        this.data.T_index = parseFloat(this.data.T_index).toFixed(2);
-        this.data.average_score = parseFloat(this.data.average_score).toFixed(
-          2
+        this.inventorData = response.data;
+        // console.log(this.inventorData)
+        this.inventorData.T_index = parseFloat(
+          this.inventorData.T_index
+        ).toFixed(2);
+        this.inventorData.average_score = parseFloat(
+          this.inventorData.average_score
+        ).toFixed(2);
+        this.inventorData.inventor_companys = JSON.parse(
+          this.inventorData.inventor_companys
         );
-        this.data.inventor_companys = JSON.parse(this.data.inventor_companys);
-        for (var key in this.data.inventor_companys) {
+        for (var key in this.inventorData.inventor_companys) {
           this.companyList.push({
             id: key,
-            company_name: this.data.inventor_companys[key]["company_name"],
-            time: this.data.inventor_companys[key]["times"],
-            end_time: this.arrayMax(this.data.inventor_companys[key]["times"]),
-            start_time: this.arrayMin(
-              this.data.inventor_companys[key]["times"]
+            company_name:
+              this.inventorData.inventor_companys[key]["company_name"],
+            time: this.inventorData.inventor_companys[key]["times"],
+            end_time: this.arrayMax(
+              this.inventorData.inventor_companys[key]["times"]
             ),
-            num: this.data.inventor_companys[key]["patents_num"],
+            start_time: this.arrayMin(
+              this.inventorData.inventor_companys[key]["times"]
+            ),
+            num: this.inventorData.inventor_companys[key]["patents_num"],
           });
         }
         // console.log(this.companyList);
-        this.data.collaborators = JSON.parse(this.data.collaborators);
-        for (var key in this.data.collaborators) {
+        this.inventorData.collaborators = JSON.parse(
+          this.inventorData.collaborators
+        );
+        for (var key in this.inventorData.collaborators) {
           this.collaboratorList.push({
             id: key,
-            name: this.data.collaborators[key]["name"],
-            num: this.data.collaborators[key]["times"].length,
-            patents: this.data.collaborators[key]["patent_ids"],
+            name: this.inventorData.collaborators[key]["name"],
+            num: this.inventorData.collaborators[key]["times"].length,
+            patents: this.inventorData.collaborators[key]["patent_ids"],
           });
         }
         // console.log(this.collaboratorList);
@@ -91,16 +112,34 @@ export default {
           (a, b) => b.num - a.num
         );
         this.companyList = this.companyList.sort((a, b) => b.num - a.num);
-        this.data.inventor_categories = JSON.parse(
-          this.data.inventor_categories
+        this.inventorData.inventor_categories = JSON.parse(
+          this.inventorData.inventor_categories
         );
-        this.data.patents_ids = JSON.parse(this.data.patents_ids);
-        this.data.patents_ipcs = JSON.parse(this.data.patents_ipcs);
-        // console.log(this.data.inventor_categories)
+        this.inventorData.patents_ids = JSON.parse(
+          this.inventorData.patents_ids
+        );
+        this.inventorData.patents_ipcs = JSON.parse(
+          this.inventorData.patents_ipcs
+        );
+        // console.log(this.inventorData.inventor_categories)
+
+        // console.log(this.inventorData.inventor_companys, "0000000000000000");
+        for (let k in this.inventorData.inventor_companys) {
+          var arr_time = this.inventorData.inventor_companys[k]["times"];
+          var res = this.getTimeAndCount(arr_time);
+          // console.log(res)
+          this.companyChartData[k] = res;
+          this.companyChartData[k]["name"] =
+            this.inventorData.inventor_companys[k]["company_name"];
+        }
+        // 等待v-for渲染完毕后开始绘制图表
+        this.$nextTick(() => {
+          this.initCompanyK();
+        });
       });
   },
-  mounted(){
-    this.initMonthWorkOrder()
+  mounted() {
+    this.initMonthWorkOrder();
   },
   methods: {
     arrayMax(arrs) {
@@ -121,72 +160,95 @@ export default {
       }
       return min;
     },
-    initMonthWorkOrder() {
-      let myChart = this.$echarts.init(this.$refs.monthWorkOrder);
-      let options = {
-        tooltip: {
-          backgroundColor: "rgba(204, 221, 255, 0.6)",
-          trigger: "axis",
-          borderColor: "#CCDDFF",
-          textStyle: { color: "#2562DC" },
-        },
-        color: ["#635df7", "#f15d5d"],
-        grid: {
-          left: "3%",
-          right: "4%",
-          bottom: "3%",
-          containLabel: true,
-        },
-        xAxis: [
-          {
-            type: "category",
-            data: [
-              "1月",
-              "2月",
-              "3月",
-              "4月",
-              "5月",
-              "6月",
-              "7月",
-              "8月",
-              "9月",
-              "10月",
-              "11月",
-              "12月",
-            ],
-            axisTick: {
-              alignWithLabel: true,
+    getTimeAndCount(arr) {
+      var res = {};
+      for (let i = 0; i < arr.length; i++) {
+        var year = arr[i].split("-")[0];
+        if (year in res) {
+          res[year]++;
+        } else {
+          res[year] = 1;
+        }
+      }
+      var res_arr = {};
+      res_arr["time"] = [];
+      res_arr["count"] = [];
+      for (let k in res) {
+        res_arr["time"].push(k);
+        res_arr["count"].push(res[k]);
+      }
+      return res_arr;
+    },
+
+    initCompanyK() {
+      var companyCharts = this.$refs.companyK;
+
+      // console.log(companyCharts, companyCharts.length);
+      for (var i = 0; i < companyCharts.length; i++) {
+        console.log("id", companyCharts[i]["id"]);
+        console.log(this.companyChartData[id]);
+        var id = companyCharts[i]["id"];
+        let myChart = this.$echarts.init(companyCharts[i]);
+        let options = {
+          title: {
+            show: true,
+            x: "center",
+            text: this.companyChartData[id]["name"]+"（"+this.inventorData.inventor_companys[id]["times"].length+"篇)",
+            textStyle: {
+              // 主标题文本样式{"fontSize": 18,"fontWeight": "bolder","color": "#333"}
+              color:"#3e38a3",
+              // fontFamily: "Arial",
+              // fontSize: 12,
+              fontStyle: "normal",
+              fontWeight: "800",
             },
           },
-        ],
-        yAxis: [
-          {
-            type: "value",
-            splitLine: {
-              show: true,
-              lineStyle: {
-                type: "dashed",
-                color: "#D3D8DD",
+          tooltip: {
+            backgroundColor: "rgba(204, 221, 255, 0.6)",
+            trigger: "axis",
+            borderColor: "#CCDDFF",
+            textStyle: { color: "#2562DC" },
+          },
+          color: ["#635df7", "#f15d5d"],
+          grid: {
+            left: "3%",
+            right: "4%",
+            bottom: "3%",
+            containLabel: true,
+          },
+          xAxis: [
+            {
+              type: "category",
+              data: this.companyChartData[id]["time"],
+              axisTick: {
+                alignWithLabel: true,
               },
             },
-          },
-        ],
-        series: [
-          {
-            name: "维修",
-            type: "bar",
-            barWidth: 10,
-            data: [141, 39, 10, 16, 79, 116, 67, 104, 12, 36, 20, 128],
-          },
-          {
-            name: "保养",
-            type: "bar",
-            barWidth: 10,
-            data: [36, 124, 112, 87, 16, 28, 80, 24, 112, 146, 127, 105],
-          },
-        ],
-      };
-      myChart.setOption(options);
+          ],
+          yAxis: [
+            {
+              type: "value",
+              splitLine: {
+                show: true,
+                lineStyle: {
+                  type: "dashed",
+                  color: "#D3D8DD",
+                },
+              },
+            },
+          ],
+          series: [
+            {
+              name: "专利",
+              type: "line",
+              barWidth: 10,
+              data: this.companyChartData[id]["count"],
+              smooth: true,
+            },
+          ],
+        };
+        myChart.setOption(options);
+      }
     },
   },
   watch: {
@@ -206,8 +268,7 @@ export default {
 </script>
 
 <style>
-
-.company-k-wrap{
+.company-k-wrap {
   width: 600px;
   height: 300px;
   border: 1px solid black;

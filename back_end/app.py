@@ -73,7 +73,7 @@ def getInventorInfoBrief():
 
     sql_brief = "select " + sql_column + \
         " from inventors where inventor_id = "+str(inventor_id) + ";"
-    print(sql_brief)
+    # print(sql_brief)
     cursor.execute(sql_brief)
     inventor_brief_info = cursor.fetchone()
     # print(inventor_brief_info)
@@ -106,7 +106,7 @@ def getInventorInfoAll():
 
     sql_brief = "select " + sql_column + \
         " from inventors where inventor_id = "+str(inventor_id) + ";"
-    print(sql_brief)
+    # print(sql_brief)
     cursor.execute(sql_brief)
     inventor_brief_info = cursor.fetchone()
     # print(inventor_brief_info)
@@ -131,7 +131,7 @@ def getPatentInfo():
 
     sql = "select " + sql_column + \
         " from company_patent where id = "+str(patent_id) + ";"
-    print(sql)
+    # print(sql)
     cursor.execute(sql)
     patent_info = cursor.fetchone()
     # print(patent_info)

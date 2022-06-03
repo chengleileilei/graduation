@@ -25,7 +25,7 @@
       {{ item.id }}
       <InventorCard :id="id"></InventorCard>
     </div> -->
-    <div v-infinite-scroll="load" style="overflow: auto" class="scoll-wrap">
+    <div v-infinite-scroll="load" infinite-scroll-distance="1" style="overflow: auto" class="scoll-wrap">
       <div v-for="(id, index) in currInventors" :key="index">
         <!-- {{ id }} -->
         <InventorCard :id="id"></InventorCard>
@@ -73,6 +73,7 @@ export default {
   },
   methods: {
     load() {
+      console.log("load触发");
       var n = this.currCount;
       for (let i = n; i < n + 3; i++) {
         if (i >= this.allInventors.length) {
@@ -115,7 +116,7 @@ export default {
   margin: 10px;
 }
 .scoll-wrap {
-  max-height: 700px;
+  height: 700px;
 }
 .ipc-first-tit {
   text-align: center;

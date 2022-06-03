@@ -52,16 +52,16 @@
         </div>
       </div>
 
-      <div class="research-wrap">
+      <!-- <div class="research-wrap">
         <p><span class="el-icon-s-opportunity"></span>研究领域：</p>
-        <!-- <p>{{data.inventor_categories}}</p> -->
+        <p>{{data.inventor_categories}}</p>
         <p class="research-text" v-if="JSON.stringify(data.inventor_categories)=='{}'">暂无数据</p>
         <div v-for="(item, index) in data.inventor_categories" :key="index">
           <p class="research-text">
             {{ item.category_name }}:{{ item.time.length }}
           </p>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>

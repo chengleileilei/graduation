@@ -44,8 +44,26 @@ def getIpcCategoryAllInventors():
     res = []
     for t in res_tuple:
         res.append(t[0])
-
     return jsonify(res)
+
+
+# 返回发明人id对应的全部category大类和数量列表
+# http://127.0.0.1:5000//inventor_all_category?inventor=5
+# @app.route('/inventor_all_category')
+# def getInventorAllCategory():
+#     inventor_id = request.args.get("inventor_id")
+#     print(inventor_id,"=======")
+#     cursor = local_db.cursor()
+#     sql = "select ipc_category from ipc_inventors where inventor_id = '" + str(inventor_id) + "';"
+#     cursor.execute(sql)
+#     res_tuple = cursor.fetchall()
+#     res = {}
+#     for t in res_tuple:
+#         if t[0] not in res_tuple:
+#             res[t[0]] = 1
+#         else:
+#             res[t[0]] += 1
+    # return jsonify(res)
 
 
 # 返回对应inventor的简要信息

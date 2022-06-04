@@ -13,6 +13,7 @@
     <!-- {{inventorData.inventor_companys}} -->
     <h1>{{ inventorData.inventor_name }}</h1>
     <p>{{ this.id }}</p>
+    <div ref="scoreRadar" class="radar-wrap"></div>
 
     <!-- <p>公司：{{ inventorData.inventor_companys }}</p> -->
     <p>公司</p>
@@ -238,7 +239,8 @@ export default {
           this.initCompanyK();
           this.initCollaboratorGraph();
           this.initIpcRiver();
-          this.intiIpcPie();
+          this.initIpcPie();
+          this.initRadar();
         });
       });
   },
@@ -246,6 +248,33 @@ export default {
     // this.initMonthWorkOrder();
   },
   methods: {
+    getNumScore(n) {
+      let score_num = 0;
+      if (n == 0) {
+        score_num = 0;
+      } else if (n <= 2) {
+        score_num = 10;
+      } else if (n <= 5) {
+        score_num = 20;
+      } else if (n <= 10) {
+        score_num = 30;
+      } else if (n <= 20) {
+        score_num = 40;
+      } else if (n <= 30) {
+        score_num = 50;
+      } else if (n <= 40) {
+        score_num = 60;
+      } else if (n <= 50) {
+        score_num = 70;
+      } else if (n <= 70) {
+        score_num = 80;
+      } else if (n <= 100) {
+        score_num = 90;
+      } else {
+        score_num = 100;
+      }
+      return score_num;
+    },
     routerTo(id) {
       console.log("tettttt");
       this.$router.push("/inventor/" + id);
@@ -462,12 +491,12 @@ export default {
         ],
       };
       myChart.setOption(options);
-var that = this
+      var that = this;
       myChart.on("click", function (param) {
         if (param.dataType == "node") {
           console.log("点击了节点", param);
           console.log("点击了节点", param.name);
-          that.routerTo(param.name)
+          that.routerTo(param.name);
         } else {
           console.log("点击了边", param);
         }
@@ -545,7 +574,7 @@ var that = this
       };
       myChart.setOption(options);
     },
-    intiIpcPie() {
+    initIpcPie() {
       let myChart = this.$echarts.init(this.$refs.ipcPie);
       let options = {
         title: {
@@ -568,7 +597,8 @@ var that = this
         },
         legend: {
           orient: "vertical",
-          left: "left",
+          // left: "left",
+          bottom: "bottom",
         },
         series: [
           {
@@ -594,24 +624,76 @@ var that = this
 
       myChart.setOption(options);
     },
+    initRadar() {
+      let myChart = this.$echarts.init(this.$refs.scoreRadar);
+      let options = {
+        title: {
+          text: this.inventorData.inventor_name + "评价雷达",
+          // subtext: "Fake Data",
+          left: "center",
+          textStyle: {
+            color: "#3e38a3",
+            // fontFamily: "Arial",
+            // fontSize: 12,
+            fontStyle: "normal",
+            fontWeight: "800",
+          },
+        },
+
+        // legend: {
+        //   data: ["thomas"],
+        // },
+        radar: {
+          // shape: 'circle',
+          indicator: [
+            { name: "综合评分", max: 100 },
+            { name: "专利质量评分", max: 100 },
+            { name: "专利数量评分", max: 100 },
+          ],
+          radius: 100,
+          center: ["50%", "60%"],
+        },
+        series: [
+          {
+            name: "Budget vs spending",
+            type: "radar",
+            data: [
+              {
+                value: [
+                  this.inventorData.T_index,
+                  this.inventorData.average_score,
+                  this.getNumScore(this.inventorData.inventor_patents_totalnum),
+                ],
+                name: "thomas",
+              },
+            ],
+          },
+        ],
+      };
+      myChart.setOption(options);
+    },
   },
- watch:{
-    $route:{
-      handler(val,oldval){
+  watch: {
+    $route: {
+      handler(val, oldval) {
         // console.log(val);//新路由信息
         // console.log(oldval);//老路由信息
-         this.id = this.$route.query.id
-        this.$router.go(0)//页面刷新
+        this.id = this.$route.query.id;
+        this.$router.go(0); //页面刷新
       },
       // 深度观察监听
-      deep: true
-    }
-   }
-
+      deep: true,
+    },
+  },
 };
 </script>
 
 <style>
+.radar-wrap {
+  width: 600px;
+  height: 300px;
+  border: 1px solid black;
+}
 .company-k-wrap {
   width: 600px;
   height: 300px;

@@ -1,8 +1,7 @@
 <template>
   <div class="centered">
-    {{ inventorData.patents_ipcs }}
-    <div ref="ipcRiver" class="river-wrap"></div>
-    {{riverData}}
+    <!-- {{ inventorData.patents_ipcs }} -->
+    <!-- {{ riverData }} -->
 
     <!-- {{test}} -->
     <!-- {{ companyChartData }} -->
@@ -12,9 +11,9 @@
       style="width: 600px; height: 300px; border: 1px solid red"
     ></div> -->
     <!-- {{inventorData.inventor_companys}} -->
+    <h1>{{ inventorData.inventor_name }}</h1>
     <p>{{ this.id }}</p>
 
-    <p>姓名：{{ inventorData.inventor_name }}</p>
     <!-- <p>公司：{{ inventorData.inventor_companys }}</p> -->
     <p>公司</p>
     <div v-for="(item, index) in companyList" :key="index">
@@ -42,6 +41,8 @@
       <p>{{ item.name }} : {{ item.num }}</p>
     </div>
     <p>研究领域</p>
+    <div ref="ipcRiver" class="river-wrap"></div>
+
     <div v-for="(item, index) in inventorData.inventor_categories" :key="index">
       <p>{{ item.category_name }}:{{ item.time.length }}</p>
     </div>
@@ -78,6 +79,8 @@ export default {
         ],
       },
       riverData: [],
+      riverLegend: [],
+      ipcInfo: {},
     };
   },
   created() {
@@ -87,7 +90,7 @@ export default {
           id: this.id,
         },
       })
-      .then((response) => {
+      .then(async (response) => {
         // console.log(response)
         this.inventorData = response.data;
         // console.log(this.inventorData)
@@ -177,34 +180,54 @@ export default {
         }
         // console.log(this.collaboratorGraphData);
 
-        // 构造河流图数据
-        var riverDataDic = {};
-        for (let i in this.inventorData.patents_ipcs) {
-          var fw = i.slice(0, 1);
-          if (fw in riverDataDic) {
-            riverDataDic[fw] = riverDataDic[fw].concat(this.inventorData.patents_ipcs[i]["time"]);
-          } else {
-            riverDataDic[fw] = this.inventorData.patents_ipcs[i]["time"];
-          }
-        }
-        // this.riverData = riverDataDic
-        console.log(this.inventorData.patents_ipcs)
-
-        for(let i in riverDataDic){
-          var currentIpcDic = {}
-          for(let n =0;n<riverDataDic[i].length;n++){
-            if(riverDataDic[i][n].slice(0,4) in currentIpcDic){
-              currentIpcDic[riverDataDic[i][n].slice(0,4)] +=1
+        // 同步请求ipc分类信息数据，进而构造河流图数据
+        await this.$axios
+          .get("http://127.0.0.1:5000/ipc_category_info")
+          .then((response) => {
+            // this.ipcInfo = response.data
+            for (let i = 0; i < response.data.length; i++) {
+              this.riverLegend.push(
+                response.data[i].ipc_category +
+                  response.data[i].ipc_category_info
+              );
+              console.log(this.riverLegend);
+              if (!(response.data[i].ip_category in this.ipcInfo)) {
+                this.ipcInfo[response.data[i].ipc_category] =
+                  response.data[i].ipc_category_info;
+              }
             }
-            else{
-              currentIpcDic[riverDataDic[i][n].slice(0,4)] =1
-            }
-          }
-          for(let k in currentIpcDic){
-            this.riverData.push([k,currentIpcDic[k],i])
-          }
-        }
+            // console.log(this.ipcInfo);
 
+            // 构造河流图数据
+            var riverDataDic = {};
+            for (let i in this.inventorData.patents_ipcs) {
+              var fw = i.slice(0, 1);
+              fw += this.ipcInfo[fw];
+              if (fw in riverDataDic) {
+                riverDataDic[fw] = riverDataDic[fw].concat(
+                  this.inventorData.patents_ipcs[i]["time"]
+                );
+              } else {
+                riverDataDic[fw] = this.inventorData.patents_ipcs[i]["time"];
+              }
+            }
+            // this.riverData = riverDataDic
+            console.log(this.inventorData.patents_ipcs);
+
+            for (let i in riverDataDic) {
+              var currentIpcDic = {};
+              for (let n = 0; n < riverDataDic[i].length; n++) {
+                if (riverDataDic[i][n].slice(0, 4) in currentIpcDic) {
+                  currentIpcDic[riverDataDic[i][n].slice(0, 4)] += 1;
+                } else {
+                  currentIpcDic[riverDataDic[i][n].slice(0, 4)] = 1;
+                }
+              }
+              for (let k in currentIpcDic) {
+                this.riverData.push([k, currentIpcDic[k], i]);
+              }
+            }
+          });
 
         // 等待v-for渲染完毕后开始绘制图表
         this.$nextTick(() => {
@@ -440,7 +463,7 @@ export default {
           },
         },
         legend: {
-          data: ["A", "B", "C", "D", "E", "F","G","H"],
+          data: this.riverLegend,
         },
         singleAxis: {
           top: 50,

@@ -42,6 +42,7 @@
     </div>
     <p>研究领域</p>
     <div ref="ipcRiver" class="river-wrap"></div>
+    <div ref="ipcPie" class="pie-wrap"></div>
 
     <div v-for="(item, index) in inventorData.inventor_categories" :key="index">
       <p>{{ item.category_name }}:{{ item.time.length }}</p>
@@ -81,6 +82,7 @@ export default {
       riverData: [],
       riverLegend: [],
       ipcInfo: {},
+      pieData: [],
     };
   },
   created() {
@@ -162,14 +164,14 @@ export default {
           category: 0,
           value: 10,
           label: this.inventorData.inventor_name,
-          name: this.inventorData.inventor_name,
+          name: this.inventorData.inventor_id,
         }); // 加入中心节点
         for (var i = 0; i < this.collaboratorList.length; i++) {
           this.collaboratorGraphData["node"].push({
             category: i + 1,
             value: this.collaboratorList[i]["num"],
             label: this.collaboratorList[i]["name"],
-            name: this.collaboratorList[i]["name"],
+            name: this.collaboratorList[i]["id"],
           });
           this.collaboratorGraphData["link"].push({
             source: 0,
@@ -178,7 +180,7 @@ export default {
             label: "合作者",
           });
         }
-        // console.log(this.collaboratorGraphData);
+        console.log(this.collaboratorGraphData);
 
         // 同步请求ipc分类信息数据，进而构造河流图数据
         await this.$axios
@@ -190,7 +192,7 @@ export default {
                 response.data[i].ipc_category +
                   response.data[i].ipc_category_info
               );
-              console.log(this.riverLegend);
+              // console.log(this.riverLegend);
               if (!(response.data[i].ip_category in this.ipcInfo)) {
                 this.ipcInfo[response.data[i].ipc_category] =
                   response.data[i].ipc_category_info;
@@ -212,9 +214,10 @@ export default {
               }
             }
             // this.riverData = riverDataDic
-            console.log(this.inventorData.patents_ipcs);
+            // console.log(riverDataDic);
 
-            for (let i in riverDataDic) {
+            for (var i in riverDataDic) {
+              this.pieData.push({ name: i, value: riverDataDic[i].length }); //顺路构造饼图数据
               var currentIpcDic = {};
               for (let n = 0; n < riverDataDic[i].length; n++) {
                 if (riverDataDic[i][n].slice(0, 4) in currentIpcDic) {
@@ -227,6 +230,7 @@ export default {
                 this.riverData.push([k, currentIpcDic[k], i]);
               }
             }
+            // console.log(this.pieData);
           });
 
         // 等待v-for渲染完毕后开始绘制图表
@@ -234,6 +238,7 @@ export default {
           this.initCompanyK();
           this.initCollaboratorGraph();
           this.initIpcRiver();
+          this.intiIpcPie();
         });
       });
   },
@@ -241,6 +246,10 @@ export default {
     // this.initMonthWorkOrder();
   },
   methods: {
+    routerTo(id) {
+      console.log("tettttt");
+      this.$router.push("/inventor/" + id);
+    },
     arrayMax(arrs) {
       var max = arrs[0];
       for (var i = 1, ilen = arrs.length; i < ilen; i++) {
@@ -285,8 +294,8 @@ export default {
 
       // console.log(companyCharts, companyCharts.length);
       for (var i = 0; i < companyCharts.length; i++) {
-        console.log("id", companyCharts[i]["id"]);
-        console.log(this.companyChartData[id]);
+        // console.log("id", companyCharts[i]["id"]);
+        // console.log(this.companyChartData[id]);
         var id = companyCharts[i]["id"];
         let myChart = this.$echarts.init(companyCharts[i]);
         let options = {
@@ -308,8 +317,8 @@ export default {
             },
           },
           tooltip: {
-            backgroundColor: "rgba(204, 221, 255, 0.6)",
             trigger: "axis",
+            backgroundColor: "rgba(204, 221, 255, 0.6)",
             borderColor: "#CCDDFF",
             textStyle: { color: "#2562DC" },
           },
@@ -359,10 +368,16 @@ export default {
       let myChart = this.$echarts.init(this.$refs.collaboratorGraphData);
       let options = {
         title: {
-          text: "人际关系网络图", //标题
-
-          top: "top", //相对在y轴上的位置
-          left: "center", //相对在x轴上的位置
+          text: this.inventorData.inventor_name + "合作者网络图",
+          // subtext: "Fake Data",
+          left: "center",
+          textStyle: {
+            color: "#3e38a3",
+            // fontFamily: "Arial",
+            // fontSize: 12,
+            fontStyle: "normal",
+            fontWeight: "800",
+          },
         },
         tooltip: {
           //提示框，鼠标悬浮交互时的信息提示
@@ -447,12 +462,38 @@ export default {
         ],
       };
       myChart.setOption(options);
+var that = this
+      myChart.on("click", function (param) {
+        if (param.dataType == "node") {
+          console.log("点击了节点", param);
+          console.log("点击了节点", param.name);
+          that.routerTo(param.name)
+        } else {
+          console.log("点击了边", param);
+        }
+      });
     },
+
     initIpcRiver() {
       let myChart = this.$echarts.init(this.$refs.ipcRiver);
       let options = {
+        title: {
+          text: this.inventorData.inventor_name + "研究领域河流图",
+          // subtext: "Fake Data",
+          left: "center",
+          textStyle: {
+            color: "#3e38a3",
+            // fontFamily: "Arial",
+            // fontSize: 12,
+            fontStyle: "normal",
+            fontWeight: "800",
+          },
+        },
         tooltip: {
           trigger: "axis",
+          backgroundColor: "rgba(204, 221, 255, 0.9)",
+          borderColor: "#CCDDFF",
+          textStyle: { color: "#2562DC" },
           axisPointer: {
             type: "line",
             lineStyle: {
@@ -464,6 +505,10 @@ export default {
         },
         legend: {
           data: this.riverLegend,
+          orient: "vertical",
+
+          left: "left",
+          // bottom:"bottom"
         },
         singleAxis: {
           top: 50,
@@ -500,20 +545,69 @@ export default {
       };
       myChart.setOption(options);
     },
-  },
-  watch: {
-    id_public_goods_type: {
-      handler(val) {
-        // 检测到数据变化
-        if (val && val != this.$route.params.id) {
-          this.id = val;
-          // 刷新页面
-          this.$nextTick(this.refresh);
-        }
-      },
-      immediate: true,
+    intiIpcPie() {
+      let myChart = this.$echarts.init(this.$refs.ipcPie);
+      let options = {
+        title: {
+          text: this.inventorData.inventor_name + "研究领域分布",
+          // subtext: "Fake Data",
+          left: "center",
+          textStyle: {
+            color: "#3e38a3",
+            // fontFamily: "Arial",
+            // fontSize: 12,
+            fontStyle: "normal",
+            fontWeight: "800",
+          },
+        },
+        tooltip: {
+          trigger: "item",
+          backgroundColor: "rgba(204, 221, 255, 0.9)",
+          borderColor: "#CCDDFF",
+          textStyle: { color: "#2562DC" },
+        },
+        legend: {
+          orient: "vertical",
+          left: "left",
+        },
+        series: [
+          {
+            name: "Access From",
+            type: "pie",
+            radius: ["0%", "50%"],
+            itemStyle: {
+              borderRadius: 5,
+              borderColor: "#fff",
+              borderWidth: 1,
+            },
+            data: this.pieData,
+            emphasis: {
+              itemStyle: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: "rgba(0, 0, 0, 0.1)",
+              },
+            },
+          },
+        ],
+      };
+
+      myChart.setOption(options);
     },
   },
+ watch:{
+    $route:{
+      handler(val,oldval){
+        // console.log(val);//新路由信息
+        // console.log(oldval);//老路由信息
+         this.id = this.$route.query.id
+        this.$router.go(0)//页面刷新
+      },
+      // 深度观察监听
+      deep: true
+    }
+   }
+
 };
 </script>
 
@@ -529,6 +623,11 @@ export default {
   border: 1px solid black;
 }
 .river-wrap {
+  width: 800px;
+  height: 600px;
+  border: 1px solid black;
+}
+.pie-wrap {
   width: 800px;
   height: 600px;
   border: 1px solid black;

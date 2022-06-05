@@ -1,7 +1,8 @@
 <template>
   <div class="centered">
-    <!-- {{ inventorData.patents_ipcs }} -->
+    <!-- {{ inventorData.inventor_categories }} -->
     <!-- {{ riverData }} -->
+    <!-- {{ pieData }} -->
 
     <!-- {{test}} -->
     <!-- {{ companyChartData }} -->
@@ -11,43 +12,170 @@
       style="width: 600px; height: 300px; border: 1px solid red"
     ></div> -->
     <!-- {{inventorData.inventor_companys}} -->
-    <h1>{{ inventorData.inventor_name }}</h1>
-    <p>{{ this.id }}</p>
-    <div ref="scoreRadar" class="radar-wrap"></div>
-
-    <!-- <p>公司：{{ inventorData.inventor_companys }}</p> -->
-    <p>公司</p>
-    <div v-for="(item, index) in companyList" :key="index">
-      <p>
-        {{ item.company_name[0] }} {{ item.start_time }}-{{
-          item.end_time
-        }}
-        贡献专利{{ item.num }}篇
-      </p>
-      <!-- {{item.id}} -->
-      <div ref="companyK" class="company-k-wrap" :id="String(item.id)"></div>
+    <div class="info-wrap base-box">
+      <div class="avatar2">
+        <img
+          src="@/assets/inventor_card/default_avatar.png"
+          alt=""
+          @click="routerTo(id)"
+        />
+      </div>
+      <div class="info-right">
+        <h1>{{ inventorData.inventor_name }}</h1>
+        <div class="base-info">
+          <p><span class="el-icon-user-solid"></span>id:{{ this.id }}</p>
+          <p><span class="el-icon-info"></span>发明人</p>
+        </div>
+        <div
+          v-for="(item, index) in companyList"
+          :key="index"
+          class="company-wrap"
+        >
+          <p>
+            <span class="el-icon-office-building"></span>
+            {{ item.start_time }} 至 {{ item.end_time }}
+            {{ item.company_name[0] }}（贡献专利{{ item.num }}篇）
+          </p>
+        </div>
+        <div class="score-wrap">
+          <div class="number-wrap">
+            <div class="star-wrap"><img src="@/assets/star.png" alt="" /></div>
+            <div class="num-info-wrap">
+              <p>
+                专利申请数量<span
+                  class="el-icon-question small-title"
+                  title="系统中专利数据"
+                ></span>
+              </p>
+              <p>
+                <span class="number">{{
+                  inventorData.inventor_patents_totalnum
+                }}</span
+                >件
+              </p>
+            </div>
+          </div>
+          <div class="number-wrap">
+            <div class="star-wrap"><img src="@/assets/star.png" alt="" /></div>
+            <div class="num-info-wrap">
+              <p>
+                发明人评分<span
+                  class="el-icon-question small-title"
+                  title="模型根据数据生成的人才评分"
+                ></span>
+              </p>
+              <p>
+                <span class="number">{{ inventorData.T_index }}</span>
+              </p>
+            </div>
+          </div>
+          <div class="number-wrap">
+            <div class="star-wrap"><img src="@/assets/star.png" alt="" /></div>
+            <div class="num-info-wrap">
+              <p>
+                专利分数<span
+                  class="el-icon-question small-title"
+                  title="全部专利平均分"
+                ></span>
+              </p>
+              <p>
+                <span class="number">{{ inventorData.average_score }}</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <p>专利数量：{{ inventorData.inventor_patents_totalnum }}</p>
-    <p>专利质量综合评分：{{ inventorData.average_score }}</p>
-    <p>发明家质量综合评分：{{ inventorData.T_index }}</p>
-
-    <!-- 合作者 -->
-    <h1>合作者</h1>
-    <!-- {{ collaboratorGraphData.node }} -->
-    <!-- <br /> -->
-    <!-- {{ collaboratorGraphData.link }} -->
-    <div ref="collaboratorGraphData" class="collaborator-graph-wrap"></div>
-    <div v-for="(item, index2) in collaboratorList" :key="index2">
-      <p>{{ item.name }} : {{ item.num }}</p>
-    </div>
-    <p>研究领域</p>
-    <div ref="ipcRiver" class="river-wrap"></div>
-    <div ref="ipcPie" class="pie-wrap"></div>
-
-    <div v-for="(item, index) in inventorData.inventor_categories" :key="index">
-      <p>{{ item.category_name }}:{{ item.time.length }}</p>
-    </div>
+    <el-row :gutter="0" class="">
+      <el-col :xs="16" :sm="16" :md="16" :lg="16" :xl="16">
+        <div class="base-box">
+          <h2><span class="el-icon-aim"></span> 技术领域</h2>
+          <div class="category-wrap">
+            <div v-for="(item, index) in pieData" :key="index">
+              <p>{{ item.name }}({{ item.value }})</p>
+            </div>
+          </div>
+        </div>
+        <div class="base-box">
+          <h2><span class="el-icon-data-line"></span> 可视分析</h2>
+          <div class="echarts-wrap">
+            <div
+              ref="ipcRiver"
+              class="river-wrap charts-base"
+              :style="{
+                'background-image': `url(${require('@/assets/chart_bg.png')})`,
+              }"
+            ></div>
+            <div class="radar-and-pie">
+              <div
+                ref="scoreRadar"
+                class="radar-wrap charts-base"
+                :style="{
+                  'background-image': `url(${require('@/assets/chart_bg.png')})`,
+                }"
+              ></div>
+              <div
+                ref="ipcPie"
+                class="pie-wrap charts-base"
+                :style="{
+                  'background-image': `url(${require('@/assets/chart_bg.png')})`,
+                }"
+              ></div>
+            </div>
+            <div
+              ref="collaboratorGraphData"
+              class="collaborator-graph-wrap charts-base"
+              :style="{
+                'background-image': `url(${require('@/assets/chart_bg.png')})`,
+              }"
+            ></div>
+          </div>
+        </div>
+        <div class="base-box">
+          <h2><span class="el-icon-data-line"></span> 专利k线</h2>
+          <div class="echarts-wrap">
+            <div v-for="(item, index) in companyList" :key="index">
+              <div
+                ref="companyK"
+                class="company-k-wrap charts-base"
+                :style="{
+                  'background-image': `url(${require('@/assets/chart_bg.png')})`,
+                }"
+                :id="String(item.id)"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </el-col>
+      <el-col :xs="8" :sm="8" :md="8" :lg="8" :xl="8">
+        <div class="base-box page-right-wrap">
+          <h2>合作列表</h2>
+          <!-- {{ collaboratorList }} -->
+          <p v-if="collaboratorList.length == 0">暂无数据</p>
+          <div>
+            <div v-for="(item, index2) in collaboratorList" :key="index2">
+              <colCard :id="item.id"></colCard>
+              <!-- <p>{{ item.name }} : {{ item.num }}</p> -->
+            </div>
+          </div>
+        </div>
+        <div class="base-box page-right-wrap">
+          <h2>关键词</h2>
+          <p v-if="JSON.stringify(inventorData.inventor_categories) == '{}'">
+            暂无数据
+          </p>
+          <div
+            v-for="(item, index) in inventorData.inventor_categories"
+            :key="index"
+          >
+            <!-- <p v-if="item.category_name.substr(0,7)!='inside_'">{{ item.category_name }}({{ item.time.length }})</p> -->
+            <p>{{ item.category_name }}({{ item.time.length }})</p>
+          </div>
+        </div>
+      </el-col>
+    </el-row>
+<!-- 
     <p>专利列表</p>
     <div v-for="(item, index) in inventorData.patents_ids" :key="index">
       <p>专利id：{{ item }}</p>
@@ -55,13 +183,18 @@
     <p>ipc分类信息</p>
     <div v-for="(item, index) in inventorData.patents_ipcs" :key="index">
       <p>ipc号：{{ index }} 发表{{ item.time.length }}次 {{ item.ipc_info }}</p>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script>
+import colCard from "../inventorPage/colCard.vue";
+
 export default {
   name: "Inventor",
+  components: {
+    colCard,
+  },
   data() {
     return {
       id: this.$route.params.id,
@@ -142,6 +275,20 @@ export default {
         this.inventorData.inventor_categories = JSON.parse(
           this.inventorData.inventor_categories
         );
+        for (var key in this.inventorData.inventor_categories) {
+          console.log(
+            "kkk",
+            this.inventorData.inventor_categories[key]["category_name"]
+          );
+          if (
+            this.inventorData.inventor_categories[key]["category_name"].substr(
+              0,
+              7
+            ) == "inside_"
+          ) {
+            delete this.inventorData.inventor_categories[key];
+          }
+        }
         this.inventorData.patents_ids = JSON.parse(
           this.inventorData.patents_ids
         );
@@ -231,6 +378,8 @@ export default {
                 this.riverData.push([k, currentIpcDic[k], i]);
               }
             }
+            this.pieData = this.pieData.sort((a, b) => b.value - a.value);
+
             // console.log(this.pieData);
           });
 
@@ -390,6 +539,9 @@ export default {
           ],
         };
         myChart.setOption(options);
+        window.addEventListener("resize", () => {
+          myChart.resize();
+        });
       }
     },
 
@@ -411,6 +563,9 @@ export default {
         tooltip: {
           //提示框，鼠标悬浮交互时的信息提示
           trigger: "item", //数据触发类型
+          backgroundColor: "rgba(204, 221, 255, 0.6)",
+          borderColor: "#CCDDFF",
+          textStyle: { color: "#2562DC" },
           formatter: function (params) {
             //触发之后返回的参数，这个函数是关键
             if (params.data.category != undefined) {
@@ -434,7 +589,7 @@ export default {
           },
         },
         //全局颜色，图例、节点、边的颜色都是从这里取，按照之前划分的种类依序选取
-        color: ["rgb(194,53,49)", "rgb(178,144,137)", "rgb(97,160,168)"],
+        // color: ["rgb(194,53,49)", "rgb(178,144,137)", "rgb(97,160,168)"],
         //图例，每个图表最多仅有一个图例
         // legend: [{
         //   x: 'left',//图例位置
@@ -453,8 +608,8 @@ export default {
             data: this.collaboratorGraphData["node"], //节点数据
             edges: this.collaboratorGraphData["link"], //边、联系数据
             // categories: graph.categories,//节点种类
-            focusNodeAdjacency: true, //当鼠标移动到节点上，突出显示节点以及节点的边和邻接节点
-            roam: true, //是否开启鼠标缩放和平移漫游。默认不开启。如果只想要开启缩放或者平移，可以设置成 'scale' 或者 'move'。设置成 true 为都开启
+            // focusNodeAdjacency: false, //当鼠标移动到节点上，突出显示节点以及节点的边和邻接节点
+            roam: false, //是否开启鼠标缩放和平移漫游。默认不开启。如果只想要开启缩放或者平移，可以设置成 'scale' 或者 'move'。设置成 true 为都开启
             label: {
               //图形上的文本标签，可用于说明图形的一些数据信息
               normal: {
@@ -491,6 +646,9 @@ export default {
         ],
       };
       myChart.setOption(options);
+      window.addEventListener("resize", () => {
+        myChart.resize();
+      });
       var that = this;
       myChart.on("click", function (param) {
         if (param.dataType == "node") {
@@ -536,8 +694,8 @@ export default {
           data: this.riverLegend,
           orient: "vertical",
 
-          left: "left",
-          // bottom:"bottom"
+          // left: "left",
+          bottom: "bottom",
         },
         singleAxis: {
           top: 50,
@@ -573,6 +731,9 @@ export default {
         ],
       };
       myChart.setOption(options);
+      window.addEventListener("resize", () => {
+        myChart.resize();
+      });
     },
     initIpcPie() {
       let myChart = this.$echarts.init(this.$refs.ipcPie);
@@ -596,7 +757,8 @@ export default {
           textStyle: { color: "#2562DC" },
         },
         legend: {
-          orient: "vertical",
+          type: "scroll",
+          // orient: "vertical",
           // left: "left",
           bottom: "bottom",
         },
@@ -623,12 +785,15 @@ export default {
       };
 
       myChart.setOption(options);
+      window.addEventListener("resize", () => {
+        myChart.resize();
+      });
     },
     initRadar() {
       let myChart = this.$echarts.init(this.$refs.scoreRadar);
       let options = {
         title: {
-          text: this.inventorData.inventor_name + "评价雷达",
+          text: this.inventorData.inventor_name + "评分雷达",
           // subtext: "Fake Data",
           left: "center",
           textStyle: {
@@ -652,7 +817,11 @@ export default {
           ],
           radius: 100,
           center: ["50%", "60%"],
+          axisName: {
+            color: "rgb(0, 0, 0)",
+          },
         },
+
         series: [
           {
             name: "Budget vs spending",
@@ -671,6 +840,9 @@ export default {
         ],
       };
       myChart.setOption(options);
+      window.addEventListener("resize", () => {
+        myChart.resize();
+      });
     },
   },
   watch: {
@@ -689,29 +861,156 @@ export default {
 </script>
 
 <style>
+/* echarts 容器样式 */
+.charts-base {
+  /* margin: 20px 0; */
+  background-color: #e4f1ff;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  -webkit-box-shadow: 0 1px 0 0 rgb(69 70 73 / 50%),
+    0 1px 4px 0 hsl(0deg 0% 77% / 50%);
+  box-shadow: 0 1px 0 0 rgb(69 70 73 / 50%), 0 1px 4px 0 hsl(0deg 0% 77% / 50%);
+  border-radius: 4px;
+}
 .radar-wrap {
-  width: 600px;
+  width: 49%;
   height: 300px;
-  border: 1px solid black;
-}
-.company-k-wrap {
-  width: 600px;
-  height: 300px;
-  border: 1px solid black;
-}
-.collaborator-graph-wrap {
-  width: 800px;
-  height: 600px;
-  border: 1px solid black;
-}
-.river-wrap {
-  width: 800px;
-  height: 600px;
-  border: 1px solid black;
 }
 .pie-wrap {
-  width: 800px;
-  height: 600px;
-  border: 1px solid black;
+  width: 49%;
+  height: 300px;
+}
+.company-k-wrap {
+  margin: 20px 0;
+  width: 100%;
+  height: 300px;
+  /* border: 1px solid black; */
+}
+.collaborator-graph-wrap {
+  width: 100%;
+  height: 550px;
+  /* border: 1px solid black; */
+}
+.river-wrap {
+  width: 100%;
+  height: 300px;
+  /* background-image:url("../assets/chart_bg.png"); */
+  /* border: 1px solid black; */
+}
+
+/* 页面布局样式 */
+.info-wrap {
+  display: flex;
+}
+.base-box {
+  border: 1px solid #dadada;
+  /* background-color: rgba(253, 252, 241, 0.719); */
+  margin: 10px;
+  padding: 15px;
+  border-radius: 2px;
+  box-shadow: 0px 0px 5px 3px rgba(224, 224, 224, 0.4);
+}
+
+/* 人物头像 */
+.avatar2 {
+  max-width: 100px;
+  padding-right: 10px;
+}
+.avatar2 img {
+  width: 100%;
+  cursor: pointer;
+  border-radius: 2px;
+}
+
+.info-right {
+  display: flex;
+  flex-direction: column;
+}
+
+/* .company-wrap {
+  margin-bottom: 5px;
+} */
+
+.base-info {
+  display: flex;
+  flex-direction: row;
+  margin: 5px 0;
+}
+.base-info > p {
+  margin-right: 20px;
+}
+
+.score-wrap {
+  display: flex;
+  flex-direction: row;
+}
+.number-wrap {
+  margin: 5px 10px;
+  display: flex;
+  padding: 10px 30px;
+  flex-direction: row;
+  border-radius: 5px;
+  background-color: rgb(255, 238, 205);
+  border: 1px solid rgb(253, 227, 212);
+  box-shadow: 0px 0px 5px 3px rgb(224, 224, 224);
+}
+.num-info-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.star-wrap {
+  max-width: 50px;
+  margin-right: 8px;
+  /* margin: 10px; */
+}
+.star-wrap img {
+  width: 50px;
+}
+.number {
+  font-size: 20px;
+  font-weight: 700;
+  color: rgb(255, 110, 25);
+}
+.small-title {
+  cursor: pointer;
+}
+.category-wrap {
+  margin: 20px 0;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  /* width: 80%; */
+}
+.category-wrap > div {
+  margin: 10px 10px;
+  padding: 5px 20px;
+  border-radius: 20px;
+  background-color: rgba(196, 200, 255, 0.349);
+}
+.page-right-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* justify-content: center; */
+  max-height: 1470px;
+  overflow: auto;
+}
+.page-right-wrap > h2 {
+  padding: 10px 30%;
+  margin: 10px;
+  border-bottom: 1px solid rgb(160, 160, 160);
+}
+.echarts-wrap {
+  margin: 20px;
+}
+.radar-and-pie {
+  margin: 20px 0;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  /* color: rgb(0, 0, 0); */
 }
 </style>

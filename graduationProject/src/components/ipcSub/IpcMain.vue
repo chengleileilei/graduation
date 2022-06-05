@@ -1,18 +1,6 @@
 <template>
   <div>
     <h1 class="ipc-first-tit">
-      {{ topData.ipc_category }} {{ topData.ipc_category_info }}领域高权重发明家
-    </h1>
-    <!-- {{ topData }} -->
-    <p class="ipc-second-tit"></p>
-    <div
-      v-for="(item, index_ipc_main) in topData.top_inventors"
-      :key="index_ipc_main"
-    >
-      <!-- {{ item.id }} -->
-      <InventorCard :id="item.id"></InventorCard>
-    </div>
-    <h1 class="ipc-first-tit">
       {{ topData.ipc_category }} {{ topData.ipc_category_info }}领域人才概览
     </h1>
     <p class="ipc-second-tit">总计{{ this.allInventors.length }}人</p>
@@ -25,11 +13,28 @@
       {{ item.id }}
       <InventorCard :id="id"></InventorCard>
     </div> -->
-    <div v-infinite-scroll="load" infinite-scroll-distance="1" style="overflow: auto" class="scoll-wrap">
+    <div
+      v-infinite-scroll="load"
+      infinite-scroll-distance="1"
+      style="overflow: auto"
+      class="scoll-wrap"
+    >
       <div v-for="(id, index) in currInventors" :key="index">
         <!-- {{ id }} -->
         <InventorCard :id="id"></InventorCard>
       </div>
+    </div>
+    <h1 class="ipc-first-tit">
+      {{ topData.ipc_category }} {{ topData.ipc_category_info }}领域高权重发明家
+    </h1>
+    <!-- {{ topData }} -->
+    <p class="ipc-second-tit"></p>
+    <div
+      v-for="(item, index_ipc_main) in topData.top_inventors"
+      :key="index_ipc_main"
+    >
+      <!-- {{ item.id }} -->
+      <InventorCard :id="item.id"></InventorCard>
     </div>
   </div>
 </template>
@@ -116,7 +121,7 @@ export default {
   margin: 10px;
 }
 .scoll-wrap {
-  height: 700px;
+  max-height: 620px;
 }
 .ipc-first-tit {
   text-align: center;

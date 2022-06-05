@@ -1,0 +1,147 @@
+Date : 2022-06-05 20:07:49
+Directory : d:\graduation_project
+Total : 85 files,  40738 codes, 532 comments, 573 blanks, all 41843 lines
+
+Languages
++----------------+------------+------------+------------+------------+------------+
+| language       | files      | code       | comment    | blank      | total      |
++----------------+------------+------------+------------+------------+------------+
+| Excel          |          8 |     20,243 |          0 |         95 |     20,338 |
+| JSON           |          7 |     16,319 |          0 |          4 |     16,323 |
+| Vue            |         10 |      1,680 |        181 |         94 |      1,955 |
+| Python         |         11 |        859 |        216 |        211 |      1,286 |
+| JavaScript     |         21 |        705 |        120 |        117 |        942 |
+| Jupyter (JSON) |          1 |        641 |          0 |          1 |        642 |
+| Markdown       |          4 |        118 |          0 |         36 |        154 |
+| SQL            |          6 |        111 |         14 |         11 |        136 |
+| XML            |         15 |         45 |          0 |          0 |         45 |
+| HTML           |          1 |         11 |          1 |          3 |         15 |
+| Ini            |          1 |          6 |          0 |          1 |          7 |
++----------------+------------+------------+------------+------------+------------+
+
+Directories
++---------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                        | files      | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                           |         85 |     40,738 |        532 |        573 |     41,843 |
+| back_end                                                                                    |          2 |        132 |         40 |         40 |        212 |
+| databaseScript                                                                              |         24 |     21,036 |        187 |        270 |     21,493 |
+| databaseScript\company_patent_table                                                         |          4 |        215 |         26 |         54 |        295 |
+| databaseScript\inventor_table                                                               |          5 |        495 |        150 |         96 |        741 |
+| databaseScript\ipc_inventors.py                                                             |          2 |         21 |          2 |          8 |         31 |
+| databaseScript\ipc_tables                                                                   |         10 |     20,266 |          3 |        101 |     20,370 |
+| databaseScript\ipc_top_inventor_table                                                       |          3 |         39 |          6 |         11 |         56 |
+| designmysql                                                                                 |          3 |        173 |          0 |          1 |        174 |
+| designmysql\网络数据库                                                                           |          1 |          4 |          0 |          0 |          4 |
+| graduationProject                                                                           |         50 |     18,555 |        302 |        227 |     19,084 |
+| graduationProject\build                                                                     |          7 |        455 |         40 |         54 |        549 |
+| graduationProject\config                                                                    |          4 |         45 |         25 |         21 |         91 |
+| graduationProject\src                                                                       |         27 |      1,781 |        209 |        110 |      2,100 |
+| graduationProject\src\assets                                                                |         15 |         45 |          0 |          0 |         45 |
+| graduationProject\src\assets\icon                                                           |         15 |         45 |          0 |          0 |         45 |
+| graduationProject\src\components                                                            |          9 |      1,494 |        170 |         79 |      1,743 |
+| graduationProject\src\components\homeSub                                                    |          2 |         53 |          3 |         10 |         66 |
+| graduationProject\src\components\inventorPage                                               |          1 |        670 |         78 |         27 |        775 |
+| graduationProject\src\components\ipcSub                                                     |          1 |        101 |         22 |          4 |        127 |
+| graduationProject\src\router                                                                |          1 |         37 |          5 |          3 |         45 |
+| graduationProject\test                                                                      |          7 |        142 |         25 |         24 |        191 |
+| graduationProject\test\e2e                                                                  |          4 |        103 |         22 |         19 |        144 |
+| graduationProject\test\e2e\custom-assertions                                                |          1 |         18 |          8 |          2 |         28 |
+| graduationProject\test\e2e\specs                                                            |          1 |         12 |          5 |          3 |         20 |
+| graduationProject\test\unit                                                                 |          3 |         39 |          3 |          5 |         47 |
+| graduationProject\test\unit\specs                                                           |          1 |         10 |          0 |          2 |         12 |
+| patent_score                                                                                |          1 |         64 |          3 |         10 |         77 |
+| webpage_design                                                                              |          1 |         26 |          0 |          2 |         28 |
++---------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++---------------------------------------------------------------------------------------------+----------------+------------+------------+------------+------------+
+| filename                                                                                    | language       | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------------+----------------+------------+------------+------------+------------+
+| d:\graduation_project\README.md                                                             | Markdown       |         59 |          0 |         21 |         80 |
+| d:\graduation_project\Report_company_patent.json                                            | JSON           |         49 |          0 |          0 |         49 |
+| d:\graduation_project\back_end\app.py                                                       | Python         |        119 |         40 |         38 |        197 |
+| d:\graduation_project\back_end\系统搭建.md                                                      | Markdown       |         13 |          0 |          2 |         15 |
+| d:\graduation_project\databaseScript\company_patent_table\copytable.py                      | Python         |         74 |         16 |         21 |        111 |
+| d:\graduation_project\databaseScript\company_patent_table\sql_config.ini                    | Ini            |          6 |          0 |          1 |          7 |
+| d:\graduation_project\databaseScript\company_patent_table\table_move.py                     | Python         |         71 |         10 |         25 |        106 |
+| d:\graduation_project\databaseScript\company_patent_table\test.sql                          | SQL            |         64 |          0 |          7 |         71 |
+| d:\graduation_project\databaseScript\inventor_table\create_inventor.sql                     | SQL            |         17 |         13 |          4 |         34 |
+| d:\graduation_project\databaseScript\inventor_table\disambugation.py                        | Python         |         75 |         25 |         17 |        117 |
+| d:\graduation_project\databaseScript\inventor_table\inventor_table_create.py                | Python         |         21 |          4 |         10 |         35 |
+| d:\graduation_project\databaseScript\inventor_table\inventor_table_data_process.py          | Python         |        221 |         69 |         38 |        328 |
+| d:\graduation_project\databaseScript\inventor_table\sql_functions.py                        | Python         |        161 |         39 |         27 |        227 |
+| d:\graduation_project\databaseScript\ipc_inventors.py\ipc_inventors_create.py               | Python         |         17 |          2 |          8 |         27 |
+| d:\graduation_project\databaseScript\ipc_inventors.py\ipc_inventors_create.sql              | SQL            |          4 |          0 |          0 |          4 |
+| d:\graduation_project\databaseScript\ipc_tables\A-人类生活必需品.xlsx                              | Excel          |      2,904 |          0 |         16 |      2,920 |
+| d:\graduation_project\databaseScript\ipc_tables\B--作业；运输.xlsx                               | Excel          |      2,784 |          0 |         14 |      2,798 |
+| d:\graduation_project\databaseScript\ipc_tables\C-- 化学；冶金.xlsx                              | Excel          |      3,062 |          0 |         12 |      3,074 |
+| d:\graduation_project\databaseScript\ipc_tables\D部——纺织；造纸.xlsx                              | Excel          |      1,106 |          0 |          3 |      1,109 |
+| d:\graduation_project\databaseScript\ipc_tables\E--固定建筑物.xlsx                               | Excel          |      1,389 |          0 |          8 |      1,397 |
+| d:\graduation_project\databaseScript\ipc_tables\F--机械工程；照明；加热；武器；爆破.xlsx                    | Excel          |      3,005 |          0 |         15 |      3,020 |
+| d:\graduation_project\databaseScript\ipc_tables\G--物理.xlsx                                  | Excel          |      3,120 |          0 |         17 |      3,137 |
+| d:\graduation_project\databaseScript\ipc_tables\H--电学.xlsx                                  | Excel          |      2,873 |          0 |         10 |      2,883 |
+| d:\graduation_project\databaseScript\ipc_tables\create_ipc_table.sql                        | SQL            |          8 |          1 |          0 |          9 |
+| d:\graduation_project\databaseScript\ipc_tables\get_ipc_info_table.py                       | Python         |         15 |          2 |          6 |         23 |
+| d:\graduation_project\databaseScript\ipc_top_inventor_table\create_init_ipc_top_inventor.py | Python         |         21 |          6 |         11 |         38 |
+| d:\graduation_project\databaseScript\ipc_top_inventor_table\ipc_top_inventor_create.sql     | SQL            |          7 |          0 |          0 |          7 |
+| d:\graduation_project\databaseScript\ipc_top_inventor_table\ipc_top_inventor_init.sql       | SQL            |         11 |          0 |          0 |         11 |
+| d:\graduation_project\designmysql\inventor_design.json                                      | JSON           |         48 |          0 |          1 |         49 |
+| d:\graduation_project\designmysql\report_inventors.json                                     | JSON           |        121 |          0 |          0 |        121 |
+| d:\graduation_project\designmysql\网络数据库\company_inventors.json                              | JSON           |          4 |          0 |          0 |          4 |
+| d:\graduation_project\graduationProject\.postcssrc.js                                       | JavaScript     |          7 |          2 |          2 |         11 |
+| d:\graduation_project\graduationProject\README.md                                           | Markdown       |         20 |          0 |         11 |         31 |
+| d:\graduation_project\graduationProject\build\build.js                                      | JavaScript     |         35 |          0 |          7 |         42 |
+| d:\graduation_project\graduationProject\build\check-versions.js                             | JavaScript     |         45 |          0 |         10 |         55 |
+| d:\graduation_project\graduationProject\build\utils.js                                      | JavaScript     |         81 |          5 |         16 |        102 |
+| d:\graduation_project\graduationProject\build\vue-loader.conf.js                            | JavaScript     |         21 |          0 |          2 |         23 |
+| d:\graduation_project\graduationProject\build\webpack.base.conf.js                          | JavaScript     |         74 |          4 |          5 |         83 |
+| d:\graduation_project\graduationProject\build\webpack.dev.conf.js                           | JavaScript     |         82 |          7 |          7 |         96 |
+| d:\graduation_project\graduationProject\build\webpack.prod.conf.js                          | JavaScript     |        117 |         24 |          7 |        148 |
+| d:\graduation_project\graduationProject\config\dev.env.js                                   | JavaScript     |          6 |          0 |          2 |          8 |
+| d:\graduation_project\graduationProject\config\index.js                                     | JavaScript     |         29 |         25 |         16 |         70 |
+| d:\graduation_project\graduationProject\config\prod.env.js                                  | JavaScript     |          4 |          0 |          1 |          5 |
+| d:\graduation_project\graduationProject\config\test.env.js                                  | JavaScript     |          6 |          0 |          2 |          8 |
+| d:\graduation_project\graduationProject\index.html                                          | HTML           |         11 |          1 |          3 |         15 |
+| d:\graduation_project\graduationProject\package-lock.json                                   | JSON           |     16,015 |          0 |          1 |     16,016 |
+| d:\graduation_project\graduationProject\package.json                                        | JSON           |         79 |          0 |          1 |         80 |
+| d:\graduation_project\graduationProject\src\App.vue                                         | Vue            |        186 |         11 |         15 |        212 |
+| d:\graduation_project\graduationProject\src\assets\icon\antFill-file-text.svg               | XML            |          3 |          0 |          0 |          3 |
+| d:\graduation_project\graduationProject\src\assets\icon\antOutline-calendar.svg             | XML            |          3 |          0 |          0 |          3 |
+| d:\graduation_project\graduationProject\src\assets\icon\arcoDesign-email.svg                | XML            |          3 |          0 |          0 |          3 |
+| d:\graduation_project\graduationProject\src\assets\icon\arcoDesign-location.svg             | XML            |          3 |          0 |          0 |          3 |
+| d:\graduation_project\graduationProject\src\assets\icon\black-plane.svg                     | XML            |          3 |          0 |          0 |          3 |
+| d:\graduation_project\graduationProject\src\assets\icon\fas-fa-angle-right.svg              | XML            |          3 |          0 |          0 |          3 |
+| d:\graduation_project\graduationProject\src\assets\icon\fas-fa-copyright.svg                | XML            |          3 |          0 |          0 |          3 |
+| d:\graduation_project\graduationProject\src\assets\icon\fas-fa-home.svg                     | XML            |          3 |          0 |          0 |          3 |
+| d:\graduation_project\graduationProject\src\assets\icon\fas-fa-paper-plane.svg              | XML            |          3 |          0 |          0 |          3 |
+| d:\graduation_project\graduationProject\src\assets\icon\fas-fa-phone.svg                    | XML            |          3 |          0 |          0 |          3 |
+| d:\graduation_project\graduationProject\src\assets\icon\fas-fa-sync-alt.svg                 | XML            |          3 |          0 |          0 |          3 |
+| d:\graduation_project\graduationProject\src\assets\icon\iconPark-double-right Copy 2.svg    | XML            |          3 |          0 |          0 |          3 |
+| d:\graduation_project\graduationProject\src\assets\icon\iconPark-double-right.svg           | XML            |          3 |          0 |          0 |          3 |
+| d:\graduation_project\graduationProject\src\assets\icon\md-date_range.svg                   | XML            |          3 |          0 |          0 |          3 |
+| d:\graduation_project\graduationProject\src\assets\icon\md-input.svg                        | XML            |          3 |          0 |          0 |          3 |
+| d:\graduation_project\graduationProject\src\components\Example.vue                          | Vue            |         70 |          0 |          3 |         73 |
+| d:\graduation_project\graduationProject\src\components\Home.vue                             | Vue            |        118 |         17 |          7 |        142 |
+| d:\graduation_project\graduationProject\src\components\InventorCard.vue                     | Vue            |        234 |         23 |         10 |        267 |
+| d:\graduation_project\graduationProject\src\components\Ipc.vue                              | Vue            |        117 |         11 |         10 |        138 |
+| d:\graduation_project\graduationProject\src\components\Search.vue                           | Vue            |        131 |         16 |          8 |        155 |
+| d:\graduation_project\graduationProject\src\components\homeSub\IpcCard.vue                  | Vue            |         45 |          3 |          4 |         52 |
+| d:\graduation_project\graduationProject\src\components\homeSub\IpcInventorPage.vue          | Vue            |          8 |          0 |          6 |         14 |
+| d:\graduation_project\graduationProject\src\components\inventorPage\Inventor.vue            | Vue            |        670 |         78 |         27 |        775 |
+| d:\graduation_project\graduationProject\src\components\ipcSub\IpcMain.vue                   | Vue            |        101 |         22 |          4 |        127 |
+| d:\graduation_project\graduationProject\src\main.js                                         | JavaScript     |         19 |         23 |         13 |         55 |
+| d:\graduation_project\graduationProject\src\router\index.js                                 | JavaScript     |         37 |          5 |          3 |         45 |
+| d:\graduation_project\graduationProject\test\e2e\custom-assertions\elementCount.js          | JavaScript     |         18 |          8 |          2 |         28 |
+| d:\graduation_project\graduationProject\test\e2e\nightwatch.conf.js                         | JavaScript     |         40 |          1 |          6 |         47 |
+| d:\graduation_project\graduationProject\test\e2e\runner.js                                  | JavaScript     |         33 |          8 |          8 |         49 |
+| d:\graduation_project\graduationProject\test\e2e\specs\test.js                              | JavaScript     |         12 |          5 |          3 |         20 |
+| d:\graduation_project\graduationProject\test\unit\jest.conf.js                              | JavaScript     |         27 |          3 |          1 |         31 |
+| d:\graduation_project\graduationProject\test\unit\setup.js                                  | JavaScript     |          2 |          0 |          2 |          4 |
+| d:\graduation_project\graduationProject\test\unit\specs\HelloWorld.spec.js                  | JavaScript     |         10 |          0 |          2 |         12 |
+| d:\graduation_project\package-lock.json                                                     | JSON           |          3 |          0 |          1 |          4 |
+| d:\graduation_project\patent_score\test.py                                                  | Python         |         64 |          3 |         10 |         77 |
+| d:\graduation_project\test.ipynb                                                            | Jupyter (JSON) |        641 |          0 |          1 |        642 |
+| d:\graduation_project\webpage_design\inventor_page.md                                       | Markdown       |         26 |          0 |          2 |         28 |
+| Total                                                                                       |                |     40,738 |        532 |        573 |     41,843 |
++---------------------------------------------------------------------------------------------+----------------+------------+------------+------------+------------+

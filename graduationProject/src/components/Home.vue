@@ -1,5 +1,6 @@
 <template>
   <div class="centered">
+    <h1 class="home-first-tit">基于专利数据的人才画像系统</h1>
     <!-- <h2>This is 首页 page!</h2> -->
     <!-- <Card :id="1" score = "100"></Card> -->
     <!-- <p>{{ ipcData }}</p> -->
@@ -94,6 +95,10 @@ export default {
 </script>
 
 <style>
+.home-first-tit{
+  text-align: center;
+  margin: 20px;
+}
 .card {
   max-width: 527px;
   /* width: 527px; */

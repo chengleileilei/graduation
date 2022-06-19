@@ -1,4 +1,5 @@
 import pymysql
+import datetime
 import os
 import json
 import ast
@@ -31,6 +32,8 @@ except:
     print("connect database fail!")
 remote_cursor = remote_db.cursor()
 
+
+
 # 构造sql语句查询属性部分
 patent_column_prop = ['id', 'company_id', 'patenter',
                       'inventor', 'designer', 'ipc', 'application_date', 'patent_score']
@@ -40,8 +43,14 @@ for prop in patent_column_prop:
     patent_column_prop_sql += ','
 patent_column_prop_sql = patent_column_prop_sql[:-1]
 
-t = 50000  # 设置处理数据的数量
+
+# 计时
+starttime = datetime.datetime.now()
+
+
+t = 10000  # 设置处理数据的数量
 for i in range(t):
+
     i += 1
     # 获取本地持久化的数据库已处理的最大id值
     with open(root_dir+'\\current_patent_id.txt', 'r', encoding="utf-8")as f:
@@ -119,8 +128,9 @@ for i in range(t):
     # 对current_inventor中的每一个inventor进行数据写入（新建或更新）
     for ck, cv in current_inventors.items():
         # print(k, v, sep=' : ', end='\n')
+        # 计时开始
+        # starttime = datetime.datetime.now()
 
-        # 构造当前inventor数据
         new_inventor_data = {
             'inventor_id': current_inventors[ck]['inventor_id'],
             'inventor_name': ck,
@@ -145,6 +155,11 @@ for i in range(t):
             'inventor_categories': getCategory(patent_data['patent_id'], remote_cursor),
             'T_index':0
         }
+
+        # endtime = datetime.datetime.now()
+        # print (endtime - starttime)
+
+        # 构造当前inventor数据
 
         # 在合作者中删除本人，并将数据json化
         del new_inventor_data["collaborators"][new_inventor_data['inventor_id']]
@@ -318,10 +333,14 @@ for i in range(t):
             local_db.commit()
             print('**更新旧inventor：', ck)
         # 更新ipc_top_inventor各个大类排名
-        writeIpcTopInventor(new_inventor_data['inventor_id'],local_cursor)
+        # writeIpcTopInventor(new_inventor_data['inventor_id'],local_cursor)
+
         local_db.commit()
 
 
     current_patent_id = patent_data['patent_id']
     with open(root_dir+'\\current_patent_id.txt', 'w', encoding="utf-8")as f:
         f.write(str(current_patent_id))
+endtime = datetime.datetime.now()
+print (endtime - starttime)
+

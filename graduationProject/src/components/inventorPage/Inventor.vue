@@ -1,7 +1,8 @@
 <template>
   <div class="centered">
+    {{riverData}}
     <!-- {{ inventorData.inventor_categories }} -->
-    <!-- {{ riverData }} -->
+    {{ riverData }}
     <!-- {{ pieData }} -->
 
     <!-- {{test}} -->

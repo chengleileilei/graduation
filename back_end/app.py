@@ -2,12 +2,15 @@
 import pymysql
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
+import os
 
 
 app = Flask(__name__)
 
 app.config['JSON_AS_ASCII'] = False
 CORS(app, resources=r'/*')
+
+root_dir = os.path.abspath(os.path.join(os.getcwd(), "../"))
 
 
 @app.route('/')
@@ -141,7 +144,7 @@ def getPatentInfo():
 
     cursor = remote_db.cursor(cursor=pymysql.cursors.DictCursor)
     column_names = ['id', 'company_id', 'name', 'status', 'patent_type', 'num', 'patenter',
-                    'patenter_now', 'inventor', 'designer','ipc','info','public_date','application_date','address','patent_score']
+                    'patenter_now', 'inventor', 'designer', 'ipc', 'info', 'public_date', 'application_date', 'address', 'patent_score']
     sql_column = ''
     for colunm_name in column_names:
         sql_column += (colunm_name+', ')
@@ -155,7 +158,6 @@ def getPatentInfo():
     # print(patent_info)
 
     return jsonify(patent_info)
-
 
 
 # 根据发明家姓名返回对应id列表
@@ -172,9 +174,41 @@ def getInventorsByName():
         res.append(t[0])
     return jsonify(res)
 
+# 查询数据库处理专利数量
+# http://127.0.0.1:5000/system_patent_number
+@app.route('/system_data')
+def getSystemData():
+    try:
+        remote_db = pymysql.connect(host='120.27.209.14',
+                                    port=22936,
+                                    user='junshi',
+                                    password='junshi_suwen',
+                                    database='Report')
+    except:
+        print("connect database fail!")
+
+    with open(root_dir+'\\databaseScript\\inventor_table\\current_patent_id.txt', 'r', encoding="utf-8")as f:
+        max_patent_id = int(f.read())
+    sql = "select count(id) from company_patent where id<"+str(max_patent_id)+";"
+    cursor = remote_db.cursor()
+    cursor.execute(sql)
+    res = cursor.fetchone()[0]
+    return str(res)
+
+# 查询已有人才数量
+@app.route("/system_inventor_number")
+def getInventorNumber():
+    sql = "select count(inventor_id) from inventors;"
+    cursor = local_db.cursor()
+    cursor.execute(sql)
+    res = cursor.fetchone()[0]
+    return str(res)
+
+
 
 
 if __name__ == '__main__':
+    print(123)
 
     try:
         local_db = pymysql.connect(host='localhost',
@@ -183,7 +217,7 @@ if __name__ == '__main__':
                                    database='report')
     except:
         print("connect database fail!")
-
+    print(123)
 
     try:
         remote_db = pymysql.connect(host='120.27.209.14',

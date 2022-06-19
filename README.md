@@ -78,3 +78,7 @@ id为228817之前大部分专利缺少发明人信息
 # 5月24日组会
 发明人-公司 信息错误
 ### 考虑构建发明人公司矩阵，使用矩阵分解放发进行表示
+
+
+## mysql备份
+`mysqldump -u root -ppassword --all-databases>g:report2.sql`

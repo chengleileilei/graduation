@@ -1,6 +1,11 @@
 <template>
   <div class="centered">
     <h1 class="home-first-tit">基于专利数据的人才画像系统</h1>
+    <div class="system_data">
+      <h1>处理专利数据总量：<span>{{ patent_num }}</span></h1>
+      <h1>系统发明人总量：<span>{{ inventor_num }}</span></h1>
+    </div>
+
     <!-- <h2>This is 首页 page!</h2> -->
     <!-- <Card :id="1" score = "100"></Card> -->
     <!-- <p>{{ ipcData }}</p> -->
@@ -50,6 +55,8 @@ export default {
   data() {
     return {
       ipcData: "",
+      inventor_num: "",
+      patent_num: "",
       // data: "this.data",
     };
   },
@@ -57,7 +64,7 @@ export default {
   mounted() {
     this.$axios
       .get("http://127.0.0.1:5000/ipc_category_info")
-      .then((response) => {
+      .then(async (response) => {
         this.ipcData = response.data;
         for (let i = 0; i < this.ipcData.length; i++) {
           var res = JSON.parse(this.ipcData[i].top_inventors);
@@ -72,6 +79,17 @@ export default {
             (a, b) => b.score - a.score
           );
         }
+
+        await this.$axios
+          .get("http://127.0.0.1:5000/system_inventor_number")
+          .then((response) => {
+            this.inventor_num = response.data;
+          });
+        await this.$axios
+          .get("http://127.0.0.1:5000/system_data")
+          .then((response) => {
+            this.patent_num = response.data;
+          });
       });
   },
   methods: {
@@ -95,9 +113,19 @@ export default {
 </script>
 
 <style>
-.home-first-tit{
+.home-first-tit {
   text-align: center;
-  margin: 20px;
+  margin-top: 10px;
+}
+.system_data {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  padding: 20px;
+}
+.system_data span{
+  color: rgb(255, 110, 25);
 }
 .card {
   max-width: 527px;
